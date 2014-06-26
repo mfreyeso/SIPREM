@@ -1,0 +1,23 @@
+GUIA PARA LAS TABLAS DE DAO DE LA APP
+
+CREATE TABLE team (
+    id          INTEGER PRIMARY KEY,
+    name        TEXT
+);
+
+CREATE TABLE member (
+    id          INTEGER PRIMARY KEY,
+    team_id     INTEGER NOT NULL,
+    first_name  TEXT,
+    last_name   TEXT,
+    age         INT
+);
+
+
+class Team(macaron.Model): pass
+
+class Member(macaron.Model):
+    team = macaron.ManyToOne(Team, related_name="members", fkey="team_id", key="id")
+
+
+ http://nobrin.github.io/macaron/tutorial.html#definition-of-models

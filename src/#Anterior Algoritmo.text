@@ -1,0 +1,71 @@
+#Anterior Algoritmo
+
+					if cDiferencia == 0:
+						posFinalTemp = j
+
+					if cDiferencia == 4:
+						posFinal = posFinalTemp - 1
+						self.creadorEventos(i, posFinal)
+						
+						i=j-1
+						break
+
+					if kernelRegistros[j].entregarPrecipitacion() != 0.0:
+						cDiferencia = 0
+					else:
+						cDiferencia+=1
+
+#Recursivo
+#Observaciones: Rompe la cola de memoria del computador
+
+def identificadorEventos(self):
+		def makingRecursivo(inicioP, kernelRegistrosP, unidadDiferenciaP):
+			i = inicioP
+			for i in range(i, len(kernelRegistrosP)):
+				cDiferencia = 0
+				posFinal = 0
+				posFinalTemp = 0
+			
+				if kernelRegistros[i].entregarPrecipitacion() != 0.0:
+					begin = i + 1
+					#begin = i
+					for j in range(begin, len(kernelRegistros)):
+						if kernelRegistros[j].entregarPrecipitacion() != 0.0:
+							cDiferencia = 0
+							posFinalTemp = j
+						else:
+							if cDiferencia == unidadDiferenciaP:
+								posFinal = posFinalTemp
+								self.creadorEventos(i, posFinal)
+								makingRecursivo(posFinal, kernelRegistrosP, unidadDiferenciaP)
+								return
+							else:
+								cDiferencia+=1
+
+		unidadDiferencia = self.entregarTiempoDifEventos() / 5
+		kernelRegistros = self.entregarEstructuraKernel()
+		inicio=0
+		makingRecursivo(0, kernelRegistros, unidadDiferencia)
+
+#Nuevo Algoritmo
+#observaciones = El algoritmo no reinicia el ciclo for, es algo muy extraño
+for i in range(i, len(kernelRegistrosP)):
+			cDiferencia = 0
+			posFinal = 0
+			posFinalTemp = 0
+		
+			if kernelRegistros[i].entregarPrecipitacion() != 0.0:
+				begin = i + 1
+				#begin = i
+				for j in range(begin, len(kernelRegistros)):
+					if kernelRegistros[j].entregarPrecipitacion() != 0.0:
+						cDiferencia = 0
+						posFinalTemp = j
+					else:
+						if cDiferencia == unidadDiferenciaP:
+							posFinal = posFinalTemp
+							self.creadorEventos(i, posFinal)
+							break
+						else:
+							cDiferencia+=1
+				i=posFinal

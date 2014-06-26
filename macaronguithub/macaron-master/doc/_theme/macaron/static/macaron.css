@@ -1,0 +1,46 @@
+/*
+ * macaron.css
+ */
+
+@import url("sphinxdoc.css");
+
+body { background-color: #CC9966; margin: 0 40px; }
+div.bodywrapper { margin: 0 0 0 220px; }
+h1 { color: #660000; }
+h2 {
+	border-bottom: 2px dotted #cc9933;
+	color: #993300;
+	padding: 0 0 0 0.2em;
+}
+h3 {
+	border-bottom: 1px solid #dddddd;
+	border-left: 4px solid green;
+	padding: 0.1em 0 0.1em 0.2em;
+	color: #003399;
+}
+h3 tt {
+	border-bottom: none;
+}
+
+p.logo { text-align: center; }
+a { color: #993333; }
+div.sphinxsidebar h3, div.sphinxsidebar h4 { background-color: #3399cc; }
+div.sphinxsidebar { float: left; margin: 0 0 0 15px; }
+div.sphinxsidebar ul { padding: 0 0 0 2px; }
+div.related ul li a { color: #000066; }
+
+a.headerlink,
+div.body h1 a.headerlink,
+div.body h2 a.headerlink,
+div.body h3 a.headerlink {
+	font-weight: normal; color: #ffcccc !important;
+}
+em.property { word-spacing: 0.2em; }
+
+table.field-list {
+	font-size: small;
+	line-height: 130%;
+}
+th.field-name { color: #660066; }
+
+tt { font-size: inherit; }
