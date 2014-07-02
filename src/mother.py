@@ -1,3 +1,6 @@
+"""Esta clase funciona como una interfaz entre las distintas clases que interactuan en
+el acceso a datos y la funcion de direccionamiento del route"""
+
 class Mother(object):
 	
 	def __init__(self):

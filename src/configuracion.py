@@ -181,14 +181,14 @@ class ConfiguracionMother(object):
 			jornadas =[]
 			categorias =[]
 			configuracionRelacionada = models.Configuracion.get(identificacionP)
-			setConfJornadas = models.ConfJornada.select("idconf=?", [identificacionP])
+			setConfJornadas = models.ConfJornada.select("configuracion_id=?", [identificacionP])
 			for i, o in enumerate(setConfJornadas):
-				jornadaOb = models.Jornada.get(o.idjornada)
+				jornadaOb = models.Jornada.get(o.jornada_id)
 				jornadas.append(jornadaOb)
 			jornadas.sort()
-			setConfCategorias = models.ConfCategoria.select("idconf=?", [identificacionP])
+			setConfCategorias = models.ConfCategoria.select("configuracion_id=?", [identificacionP])
 			for i, o in enumerate(setConfCategorias):
-				categoriaOb = models.Categoria.get(o.idcategoria)
+				categoriaOb = models.Categoria.get(o.categoria_id)
 				categorias.append(categoriaOb)
 			categorias.sort()
 			self.preparacionFinalConfiguracion(categorias, jornadas)

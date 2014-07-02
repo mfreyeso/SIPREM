@@ -1,28 +1,37 @@
-from bottle import route, run, debug, template, request, static_file, error, get, post
-from bottle import default_app
+from bottle import *
+
 import estructuraLectura as esl
 import resumen as rev
 import acumulado as acu
 import categoria as cat
 import jornada as jor
 import mother as mot
-import reportesResumen as rpa
 import configuracion
-import prsevento
+
+#Se importan las clases de acceso a datos
+import daoevento as dtev
+import daoregistro as dtreg
+
+#import prsevento
 import macaron
-from bottle import *
 
 
-"""Controlador de MacaronPlugin Inicializando"""
-
+#Controlador de MacaronPlugin
 install(macaron.MacaronPlugin("siprem.db"))
+
+#Interfaz Mother
 mother = mot.Mother()
 fileRead = None
 
+#Creacion de objeto de Configuracion del Sistema
 configuracionP = configuracion.ConfiguracionMother()
+
+#Inicializacion de Configuracion por Defecto
 configuracionP.cargarConfiguracion(0, 0)
 
-persistencia = prsevento.PrsEvento()
+#Objeto de Acceso a Datos de Evento
+dtaevento = dtev.EventoDao()
+dtaregistro = dtreg.RegistroDao()
 
 
 @route('/')
@@ -42,8 +51,9 @@ def loadFile():
 	if estructuraMain.leerArchivo(fileRead):
 		estructuraMain.identificadorEventos()
 		listEventos = estructuraMain.entregarColeccionEventos()
+		listRegistros = estructuraMain.entregarEstructuraKernel()
 		mother.modificarEstructuraMain(estructuraMain)
-		persistencia.persistenciaColeccionEventos(listEventos, estacionSeleccionada)
+		dtaevento.almacenarEventos(listEventos, estacionSeleccionada)
 		return template('eventos.tpl', coleccionEventos=listEventos)
 	else:
 		return template('errorCargaArchivo.tpl')
@@ -227,4 +237,4 @@ def construirReporteResumen():
 		"Falla"
 
 
-run(host='localhost', port=8087)
+run(host='localhost', port=8080)

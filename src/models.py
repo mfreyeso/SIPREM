@@ -20,7 +20,7 @@ class Usuario(macaron.Model):
 	telefono = macaron.CharField(max_length=32, null=True)
 	email = macaron.CharField(max_length=48, null=False)
 	docidentificacion = macaron.CharField(max_length=18, null=False)
-	tipousuario = macaron.ManyToOne(TipoUsuario, related_name="tipousuario")
+	tipousuario = macaron.ManyToOne(TipoUsuario, related_name="usuariostp")
 
 class Jornada(macaron.Model):
 	nombre = macaron.CharField(max_length=32)
@@ -61,19 +61,19 @@ class TipoAcumulado(macaron.Model):
 
 class Resumen(macaron.Model):
 	infoDetalle = macaron.CharField(max_length=64)
-	tipoResumen = macaron.ManyToOne(TipoResumen, related_name="clasificacionR")
+	tipoResumen = macaron.ManyToOne(TipoResumen, related_name="resumenestp")
 
 class Acumulado(macaron.Model):
 	infoDetalle = macaron.CharField(max_length=64)
-	TipoAcumulado = macaron.ManyToOne(TipoAcumulado, related_name="clasificacionA")
+	TipoAcumulado = macaron.ManyToOne(TipoAcumulado, related_name="acumuladostp")
 
 class ConfCategoria(macaron.Model):
-	configuracion = macaron.ManyToOne(Configuracion, related_name="configuracionC")
-	categoriaC = macaron.ManyToOne(Categoria, related_name="categoriaC")
+	configuracion = macaron.ManyToOne(Configuracion, related_name="configuracionescf")
+	categoriaC = macaron.ManyToOne(Categoria, related_name="categoriascf")
 
 class ConfJornada(macaron.Model):
-	configuracion = macaron.ManyToOne(Configuracion, related_name="configuracionCj")
-	jornadaC = macaron.ManyToOne(Jornada, related_name="jornadaC")
+	configuracion = macaron.ManyToOne(Configuracion, related_name="configuracionescj")
+	jornadaC = macaron.ManyToOne(Jornada, related_name="jornadascj")
 
 class AlmacenSerializado(object):
 		"""docstring for AlmacenSerializado"""
@@ -81,5 +81,18 @@ class AlmacenSerializado(object):
 			super(AlmacenSerializado, self).__init__()
 			self.coleccionEventos = coleccionP
 
-class Cevento(macaron.Model): pass
+class Registro(macaron.Model):
+	precipitacion = macaron.FloatField(null=False)
+	estacion = macaron.ManyToOne(Estacion, related_name="estacionreg")
+
+class Evento(macaron.Model):
+	estacion = macaron.ManyToOne(Estacion, related_name="eventos")
+	magnitud = macaron.FloatField(null=False)
+	duracion = macaron.IntegerField(null=False)
+	intmedia = macaron.FloatField(null=False)
+	intmaxima = macaron.FloatField(null=False)
+	tipoprec = macaron.CharField(max_length=32, null=False)
+	observ = macaron.CharField(max_length=512)
+	jorprec = macaron.CharField(max_length=32, null=False)
+
 

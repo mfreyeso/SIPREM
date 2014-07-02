@@ -95,7 +95,6 @@ class estructuraLectura(object):
 		banderaCabecera = 0
 		precipitacionUbicacion = self.entregarPosicionPrecipitacion() - 1
 		for registro in reader:
-			#registro = registroiterado.split()
 			if banderaCabecera == 0:
 				cabecera = registro
 				self.modificarEtiquetaVariables(cabecera)
@@ -107,8 +106,7 @@ class estructuraLectura(object):
 				try:
 					precipitacion = float(registro[precipitacionUbicacion])
 				except Exception:
-					precipitacion = "-"
-				
+					precipitacion = "-"				
 
 				dia = int(fechaFormateada[2])
 				mes = int(fechaFormateada[1])
