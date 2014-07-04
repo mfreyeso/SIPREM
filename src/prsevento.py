@@ -44,6 +44,21 @@ class PrsEvento(object):
 		objetoDeserializado = pickle.loads(cadenaObjeto)
 		return objetoDeserializado
 
+	def pruebaDeserializacion(self):
+		try:
+			fechaInicio = datetime.date(2007, 8, 20)
+			fechaFin =  datetime.date(2007, 10, 20)
+			macaron.macaronage('siprem.db')
+			result = models.Cevento.select("fechainicio < ? and fechafin > ?", [fechaInicio, fechaFin])
+			encapsulado = result[0].binario
+			deserializado = self.deserializarObjeto(encapsulado)
+			eventos = deserializado.coleccionEventos
+			print len(eventos)
+			for evento in eventos:
+				print evento.entregarHoraInicio()
+		except Exception, e:
+			print e		
+
 	def buscarEventos(self, opcionBusquedaP, diaP, mesP, anoP):
 		fechaFin = datetime.date(anoP, 12, 31)
 		if opcionBusquedaP == 1:

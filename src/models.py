@@ -6,11 +6,6 @@ class Estacion(macaron.Model):
 	nombre = macaron.CharField(max_length=56, null=True)
 	ubicacion = macaron.CharField(max_length=56, null=True)
 
-class Configuracion(macaron.Model):
-	tiempodiferencia = macaron.IntegerField()
-	ubicacionprecipitacion = macaron.IntegerField()
-	nombre = macaron.CharField(max_length=48)
-
 class TipoUsuario(macaron.Model):pass
 
 class Usuario(macaron.Model):
@@ -22,10 +17,17 @@ class Usuario(macaron.Model):
 	docidentificacion = macaron.CharField(max_length=18, null=False)
 	tipousuario = macaron.ManyToOne(TipoUsuario, related_name="usuariostp")
 
+class Configuracion(macaron.Model):
+	tiempodiferencia = macaron.IntegerField()
+	ubicacionprecipitacion = macaron.IntegerField()
+	nombre = macaron.CharField(max_length=48)
+	usuario = macaron.ManyToOne(Usuario, related_name="configuracionesu")
+	
+
 class Jornada(macaron.Model):
 	nombre = macaron.CharField(max_length=32)
 	horainicio = macaron.IntegerField(null=True)
-	horafin = macaron.IntegerField(null=True)
+	horafin = macaron.IntegerField(null=True)	
 
 	def __cmp__(self, other):
 		if self.horainicio < other.horainicio:
@@ -38,7 +40,7 @@ class Jornada(macaron.Model):
 
 class Categoria(macaron.Model):
 	etiqueta = macaron.CharField(max_length=32)
-	metrica = macaron.FloatField(min=0, max=600)
+	metrica = macaron.FloatField(min=0, max=600)	
 
 	def __cmp__(self, other):
 		if self.metrica < other.metrica:
@@ -94,5 +96,7 @@ class Evento(macaron.Model):
 	tipoprec = macaron.CharField(max_length=32, null=False)
 	observ = macaron.CharField(max_length=512)
 	jorprec = macaron.CharField(max_length=32, null=False)
+
+class Cevento(macaron.Model): pass
 
 

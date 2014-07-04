@@ -98,12 +98,12 @@
 			<h3>Eventos Encontrados</h3>
     
 	  	     <table class="table table-hover">
-		        <tr>
+		        <tr align="center">
 		    	  	<td><strong>Evento</strong></td>
 		            <td><strong>Fecha</strong></td>
 		            <td><strong>Hora de Inicio</strong></td>
 		            <td><strong>Hora de Fin</strong></td>
-		            <td><strong>Magnitud</strong></td>
+		            <td><strong>Magnitud (mm)</strong></td>
 		            <td><strong>Duración (min)</strong></td>
 		            <td><strong>Intensidad Media (mm/h)</strong></td>
 		            <td><strong>Intensidad Maxima</strong></td>
@@ -113,14 +113,14 @@
 		        </tr>
 		        	%cont=1
 		           %for evento in coleccionEventos:
-		        	<tr>
+		        	<tr align="center">
 			            <td>{{cont}}</td>
 			            <td>{{evento.entregarFecha()}}</td>
 			            <td>{{evento.entregarHoraInicio()}}</td>
 			            <td>{{evento.entregarHoraFin()}}</td>
 			            <td>{{evento.entregarMagnitud()}}</td>
-			            <td>{{evento.entregarDuracion()}}</td>
-			            %b = '%.2f' %evento.entregarIntensidadMedia()
+			            <td>{{int(evento.entregarDuracion())}}</td>
+			            %b = '%.1f' %evento.entregarIntensidadMedia()
 			            <td>{{b}}</td>
 			            <td>{{evento.entregarIntensidadMaxima()}}</td>
 			            <td>{{evento.entregarTipoLluvia()}}</td>

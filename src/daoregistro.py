@@ -7,26 +7,16 @@ class RegistroDao(object):
 		super(RegistroDao, self).__init__()
 
 	def almacenarRegistros(self, kernelRegistrosP, estacionId):
-		macaron.macaronage("siprem.db")
-		estacionDao = models.Estacion.get(estacionId)
-		for registro in kernelRegistrosP:
-			if registro.entregarPrecipitacion() != 0 and registro.entregarPrecipitacion() != "-":
-				self.insertarRegistro(registro, estacionDao)
-
-	def insertarRegistro(self, registroP, estacionDaoP):
 		try:
 			macaron.macaronage("siprem.db")
-			estacionDaoP.estacionreg.append(
-				fecha = registroP.entregarFecha(),
-				hora = registroP.entregarHora(),
-				vprec = registro.entregarPrecipitacion()
-			)
+			estacionDaoP = models.Estacion.get(estacionId)
+			for registroP in kernelRegistrosP:
+				if registroP.entregarPrecipitacion() != 0 and registroP.entregarPrecipitacion() != "-":
+					estacionDaoP.estacionreg.append(
+					fecha = str(registroP.entregarFecha()),
+					hora = str(registroP.entregarHora()),
+					vprec = registroP.entregarPrecipitacion()
+					)
 			macaron.bake()
-			return True
 		except Exception, e:
 			print e
-			return False
-		
-
-
-		

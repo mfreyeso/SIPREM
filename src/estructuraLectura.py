@@ -177,11 +177,6 @@ class estructuraLectura(object):
 			
 
 		registroInicioEvento = registrosKernel[posInicialP]
-		"""if posFinalP == posInicialP:
-			registroFinEvento = registrosKernel[posFinalP + 1]
-		else:
-			registroFinEvento = registrosKernel[posFinalP]
-"""
 		registroFinEvento = registrosKernel[posFinalP + 1]
 		fechaEvento = registroInicioEvento.entregarFecha()
 		horaInicioEvento = registroInicioEvento.entregarHora()
@@ -191,7 +186,7 @@ class estructuraLectura(object):
 		horaFinEventoEntero = int(horaFinEvento.hour)
 
 		duracionEvento = float(numeroRegistros * 5)
-		intensidadMedia = magnitudEvento /(duracionEvento/60)
+		intensidadMedia = round(magnitudEvento /(duracionEvento/60), 1)
 		intensidadMaxima = maximaMagnitud * 12
 
 		"""Definiendo categoria y jornada para el evento"""

@@ -12,7 +12,6 @@ import configuracion
 import daoevento as dtev
 import daoregistro as dtreg
 
-#import prsevento
 import macaron
 
 
@@ -54,6 +53,7 @@ def loadFile():
 		listRegistros = estructuraMain.entregarEstructuraKernel()
 		mother.modificarEstructuraMain(estructuraMain)
 		dtaevento.almacenarEventos(listEventos, estacionSeleccionada)
+		dtaregistro.almacenarRegistros(listRegistros, estacionSeleccionada)
 		return template('eventos.tpl', coleccionEventos=listEventos)
 	else:
 		return template('errorCargaArchivo.tpl')
@@ -80,7 +80,6 @@ def buscarEventos():
 		mes = int(request.forms.mesDos)
 	else:
 		ano = int(request.forms.anoTres)
-
 	persistencia.buscarEventos(opcionSeleccionada, dia, mes, ano)
 
 @route('/tresumen')
