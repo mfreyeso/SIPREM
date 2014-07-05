@@ -35,11 +35,13 @@ dtaregistro = dtreg.RegistroDao()
 
 @route('/')
 def indexApp():
-	return template('index.tpl')
+	return template('indexCambios.tpl')
+	#return template('index.tpl')
 
 @route('/index')
 def indexAppTwo():
-	return template('index.tpl')
+	return template('indexCambios.tpl')
+	#return template('index.tpl')
 
 @route('/cargarArchivoS', method='POST')
 def loadFile():
