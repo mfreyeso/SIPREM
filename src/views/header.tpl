@@ -2,13 +2,13 @@
 		<nav class="navbar navbar-default" role="navigation">
 		  <div class="container-fluid">
 		    <div class="navbar-header">
-		      <a class="navbar-brand" href="/">SIPREM</a>
+		      <a class="navbar-brand" href="/index">SIPREM</a>
 		    </div>
 
 		    <!-- Navegador Izquierdo-->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      <ul class="nav navbar-nav">
-		        <li class="active"><a href="#">Inicio</a></li>
+		        <li class="active"><a href="/index">Inicio</a></li>
 		        
 		      </ul>
 		     

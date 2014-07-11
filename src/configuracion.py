@@ -188,7 +188,8 @@ class ConfiguracionMother(object):
 				nombre=nombreConfP,
 				tiempodiferencia = tDiferenciaP,
 				ubicacionprecip = ubicacionPrecipitacionP,
-				idusuario=idUsuarioP)
+				usuario_id=idUsuarioP,
+				predt = 0)
 			macaron.bake()	
 			response = True
 			return response

@@ -181,9 +181,9 @@ def cargarConfiguracion(idconfiguracion):
 
 @route('/crearconfiguracion', method="POST")
 def adicionarConfiguracion():
-	nombreConfiguracion = request.forms.nombreconf
-	tiempoDifEventos = int(request.forms.tiempodif) / 5
-	posicionPrecipitacion = int(request.forms.pospre)
+	nombreConfiguracion = request.forms.nombreC
+	tiempoDifEventos = int(request.forms.dfprec) / 5
+	posicionPrecipitacion = int(request.forms.psprec)
 	if configuracionP.adicionarConfiguracion(1, nombreConfiguracion, tiempoDifEventos, posicionPrecipitacion):
 		print "Adicione la Configuracion"
 		actualizacion = configuracionP.actualizarConfiguracion()
@@ -236,6 +236,10 @@ def construirReporteResumen():
 		"Revisar el Directorio"
 	else:
 		"Falla"
+
+@route('/estaciones')
+def estacionesSIPREM():
+	return template('estaciones.tpl')
 
 
 run(host='localhost', port=8080)
