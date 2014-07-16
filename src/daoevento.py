@@ -1,5 +1,6 @@
 import macaron
 import models
+import evento as evm
 import sqlite3 as lite
 import cPickle as pickle
 
@@ -46,6 +47,44 @@ class EventoDao(object):
 		objetoDeserializado = pickle.loads(cadenaObjeto)
 		return objetoDeserializado
 		
+	def buscarEventos(self, fechaInicialP, fechaFinalP, estacionIdP):
+		try:
+			macaron.macaronage("siprem.db")
+			estacionDao = models.Estacion.get(estacionIdP)
+			eventosDao = estacionDao.eventos.select("fecha between ? and ?", [fechaInicialP, fechaFinalP])
+			eventos = self.transformarEventosModelo(eventosDao)
+			return eventos	
+		except Exception, e:
+			print e
+
+	def buscarEventosAvanzado(self, fechaInicialP, fechaFinalP, estacionIdP, categoriaP, jornadaP):
+		try:
+			macaron.macaronage("siprem.db")
+			estacionDao = models.Estacion.get(estacionIdP)
+			eventosDao = estacionDao.eventos.select("fecha between ? and ? and tipoprec = ? and jorprec = ?", [fechaInicialP, fechaFinalP, categoriaP, jornadaP])
+			eventos = self.transformarEventosModelo(eventosDao)
+			return eventos	
+		except Exception, e:
+			print e
 
 
-		
+	def transformarEventosModelo(self, coleccionEventosDaoP):
+		eventosTransformados = []
+		for eventoD in coleccionEventosDaoP:
+			vmagn = self.deserializarObjeto(eventoD.vmagn)
+			objEvento = evm.evento(
+				eventoD.fecha,
+				eventoD.horainicio,
+				eventoD.horafin,
+				eventoD.magnitud,
+				eventoD.duracion,
+				eventoD.intmedia,
+				eventoD.intmaxima,
+				eventoD.tipoprec,
+				eventoD.jorprec,
+				eventoD.observ,
+				vmagn
+				)
+			eventosTransformados.append(objEvento)
+
+		return eventosTransformados

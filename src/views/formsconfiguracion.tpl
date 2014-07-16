@@ -15,11 +15,11 @@
             </div>
             <div class="form-group">
                <label for="tiempo">Diferencial de Tiempo Precipitación (min.)</label>
-               <input type="number" id="dfprec" name="dfprec" min="5">
+               <input class="form-control" type="number" id="dfprec" name="dfprec" min="5">
             </div>
             <div class="form-group">
                <label for="tiempo">Posición Precipitación (Archivo Plano)</label>
-               <input type="number" id="psprec" name="psprec" min="0">
+               <input class="form-control" type="number" id="psprec" name="psprec" min="0">
             </div>
             <div class="form-group">
                <button type="submit" class="btn btn-success">Crear</button>

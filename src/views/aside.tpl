@@ -4,7 +4,13 @@
 	 			<li><a href="/index">Inicio</a></li>
 	  			<li><a href="#">Perfil</a></li>
 	  			<li id="estaciones"><a href="/estaciones">Estaciones</a></li>
-	  			<li><a href="/cargarEventos">Eventos</a></li>
+	  			<li><a href="/eventos" class="dropdown-toggle" data-toggle="dropdown">Eventos<span class="caret"></span></a>
+		          <ul class="dropdown-menu">
+		          	<li><a href="/eventos">Eventos(Busqueda Basica)</a></li>
+		          	<li><a href="/eventosFiltro">Eventos(Busqueda Avanzada)</a></li>
+		          </ul>
+		        </li>
+
 	  			<li><a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuración<span class="caret"></span></a>
 		          <ul class="dropdown-menu">
 		          	<li><a href="/tconfiguracion">Administrar Configuraciones</a></li>
@@ -13,7 +19,7 @@
 		        </li>
 		        <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">Administración de Datos<span class="caret"></span></a>
 		          <ul class="dropdown-menu">
-		          	<li><a href="#">Carga de Archivos Planos</a></li>
+		          	<li><a href="/archivoPlano">Carga de Archivos Planos</a></li>
 		            <li><a href="#">Bodega de Datos</a></li>
 		          </ul>
 		        </li>

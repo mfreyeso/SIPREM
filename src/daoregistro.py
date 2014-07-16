@@ -1,5 +1,6 @@
 import models
 import macaron
+import registro as reg
 
 class RegistroDao(object):
 	"""docstring for RegistroDao"""
@@ -18,5 +19,33 @@ class RegistroDao(object):
 					vprec = registroP.entregarPrecipitacion()
 					)
 			macaron.bake()
+		except Exception, e:
+			print e
+
+	def buscarRegistros(self, fechaInicialP, fechaFinalP, estacionIdP):
+		try:
+			macaron.macaronage("siprem.db")
+			estacionDaoP = models.Estacion.get(estacionId)
+			registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicialP, fechaFinalP])
+			registros = self.transformarRegistros(registrosDao)
+			return registros
+		except Exception, e:
+			raise e
+
+	def transformarRegistros(self, coleccionRegistrosDaoP):
+		registrosTransformados = []
+		for registroD  in coleccionRegistrosDaoP:
+			objRegistro = reg.registro(
+				registroD.fecha,
+				registroD.hora,
+				registroD.vprec)
+			registrosTransformados.append(objRegistro)
+		return registrosTransformados
+
+	def busquedaParametrizada(self, opcionBusquedaP, parametrosP):
+		try:
+			macaron.macaronage("siprem.db")
+			if opcionBusquedaP == 2:
+
 		except Exception, e:
 			print e

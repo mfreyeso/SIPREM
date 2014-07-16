@@ -43,7 +43,7 @@ def indexAppTwo():
 	return template('indexCambios.tpl')
 	#return template('index.tpl')
 
-@route('/cargarArchivoS', method='POST')
+@route('/cargarArchivo', method='POST')
 def loadFile():
 	fileRead = request.files.get('fileIn').file
 	estacionSeleccionada = int(request.forms.estacionselect)
@@ -68,21 +68,45 @@ def loadEvents():
 		return template('eventos.tpl', coleccionEventos=objetosEventos)
 	except Exception:
 		vectorEstaciones = configuracionP.cargarEstaciones()
-		return template('buscarEventos.tpl', estaciones=vectorEstaciones)
+		return template('buscarEventosv2.tpl', estaciones=vectorEstaciones)
+
+@route('/archivoPlano')
+def cargaArchivoPlano():
+	vectorEstaciones = configuracionP.cargarEstaciones()
+	return template('cargaArchivo.tpl', estaciones=vectorEstaciones)
+
+@route('/eventos', method='GET')
+def eventos():
+	vectorEstaciones = configuracionP.cargarEstaciones()
+	return template('buscarEventosv2.tpl', estaciones=vectorEstaciones)
+
+@route('/eventosFiltro', method='GET')
+def eventos():
+	vectorEstaciones = configuracionP.cargarEstaciones()
+	vectorJornadas = configuracionP.entregarJornadas() 
+	vectorCategorias = configuracionP.entregarCategorias()
+	return template('buscarEventosAvanzado.tpl', estaciones=vectorEstaciones, jornadas=vectorJornadas, categorias=vectorCategorias)
 
 @route('/buscarEventos', method='POST')
 def buscarEventos():
-	opcionSeleccionada = int(request.forms.opcionselect)
-	if opcionSeleccionada == 1:
-		ano = int(request.forms.anoUno)
-		mes = int(request.forms.mesUno)
-		dia = int(request.forms.dia)
-	elif opcionSeleccionada == 2:
-		ano = int(request.forms.anoDos)
-		mes = int(request.forms.mesDos)
-	else:
-		ano = int(request.forms.anoTres)
-	persistencia.buscarEventos(opcionSeleccionada, dia, mes, ano)
+	idEstacion = int(request.forms.estacionselect)
+	fechaInicial = str(request.forms.fechainicial)
+	fechaFinal = str(request.forms.fechafinal)
+	eventosEncontrados = dtaevento.buscarEventos(fechaInicial, fechaFinal, idEstacion)
+	return template('eventos.tpl', coleccionEventos=eventosEncontrados)
+
+
+@route('/buscarEventosAvanzado', method='POST')
+def buscarEventos():
+	idEstacion = int(request.forms.estacionselect)
+	fechaInicial = str(request.forms.fechainicial)
+	fechaFinal = str(request.forms.fechafinal)
+	jornada = str(request.forms.jornada)
+	categoria = str(request.forms.categoria)
+	eventosEncontrados = dtaevento.buscarEventosAvanzado(fechaInicial, fechaFinal, idEstacion, categoria, jornada)
+	return template('eventos.tpl', coleccionEventos=eventosEncontrados)
+
+
 
 @route('/tresumen')
 def resumen():
@@ -120,8 +144,7 @@ def resumenParametrizado():
 		return template('resumenParametrizadoTrimestralBimodal.tpl', resource=response)
 
 @route('/acumuladoParametrizado', method='POST')
-def prepareAcumulate():
-	
+def prepareAcumulate():	
 	seleccion = int(request.forms.opcionselect)
 	estructuraMain = mother.entregarEstructuraMain()
 	objetosEventos = estructuraMain.entregarColeccionEventos()
@@ -157,9 +180,38 @@ def prepareAcumulate():
 		resultadoP = objAcumulador.acumuladoParametrizado(seleccion, 0, 0, 0, 0, trimestreSeleccionado)		
 	return template('resacumulado.tpl', resultado=resultadoP, opseleccion=opSelec, cadenaParametrizada=cadenaParametrizadaP)
 
+
+@route('/buscarAcumulado', method='POST')
+def busquedaAcumulado():
+	estacionSeleccionada = int(request.forms.estacionselect)
+	opcionSeleccionada = int(request.forms.estacionselect)
+	if opcionSeleccionada ==1:
+		parametro = request.forms.fecha
+	elif opcionSeleccionada == 2:
+		parametro = request.forms.mes		
+	elif opcionSeleccionada == 3:
+		parametro = request.forms.ano
+	elif opcionSeleccionada == 4:
+		parametro = [int(request.forms.semestre), int(request.forms.ano)]
+	elif opcionSeleccionada == 5:
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+	else:
+		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
+
+	dtaregistro.busca
+
+
+
+
+
+
+
+
+
 @route('/tacumulado')
 def vistaAcumulado():
-	return template('sacumuladod.tpl')
+	vectorEstaciones = configuracionP.cargarEstaciones()
+	return template('sacumuladod.tpl', estaciones=vectorEstaciones)
 
 @route('/tconfiguracion')
 def vistaConfiguracion():
