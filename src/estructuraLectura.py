@@ -205,8 +205,6 @@ class estructuraLectura(object):
 
 		nuevoEvento = evento.evento(fechaEvento, horaInicioEvento, horaFinEvento, magnitudEvento, duracionEvento, intensidadMedia, intensidadMaxima, categoriaEvento, jornadaEvento, observaciones, vectorMagnitudes)
 		nuevoEvento.calcularTiempoNeto()
-		#nuevoEvento.modificarIdentificador(nuevoEvento.entregarHash())
-		#print nuevoEvento
 		self.adicionarEventoColeccion(nuevoEvento)
 		respuesta = True
 		#return respuesta

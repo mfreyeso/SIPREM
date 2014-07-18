@@ -3,6 +3,7 @@ import models
 import evento as evm
 import sqlite3 as lite
 import cPickle as pickle
+import datetime
 
 class EventoDao(object):
 	"""docstring for EventoDao"""
@@ -67,7 +68,6 @@ class EventoDao(object):
 		except Exception, e:
 			print e
 
-
 	def transformarEventosModelo(self, coleccionEventosDaoP):
 		eventosTransformados = []
 		for eventoD in coleccionEventosDaoP:
@@ -85,6 +85,76 @@ class EventoDao(object):
 				eventoD.observ,
 				vmagn
 				)
+			objEvento.calcularTiempoNeto()
 			eventosTransformados.append(objEvento)
 
 		return eventosTransformados
+
+	def busquedaParametrizada(self, opcionBusquedaP, parametrosP, estacionIdP):
+		try:
+			macaron.macaronage("siprem.db")
+			estacionDaoP = models.Estacion.get(estacionIdP)
+			if opcionBusquedaP == 1:
+				eventosDao = estacionDaoP.eventos.select("fecha = ?", [parametrosP])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 2:
+				eventosDao = estacionDaoP.eventos.select("strftime('%Y-%d', fecha) = ?", [parametrosP])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 3:
+				eventosDao = estacionDaoP.eventos.select("strftime('%Y', fecha) = ?", [parametrosP])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 4:
+				if parametrosP[0] == 1:
+					fechaInicial = datetime.date(parametrosP[1], 1, 1)
+					fechaFinal = datetime.date(parametrosP[1], 6, 30)
+				else:
+					fechaInicial = datetime.date(parametrosP[1], 7, 1)
+					fechaFinal = datetime.date(parametrosP[1], 12, 31)
+				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 5:
+				#Trimestre Bimodal
+				if parametrosP[0] == 1:
+					fechaInicial = datetime.date((parametrosP[1]-1), 12, 1)
+					fechaFinal = datetime.date(parametrosP[1], 2, self.febreroBisiesto())
+				elif parametrosP[1] == 2:
+					fechaInicial = datetime.date(parametrosP[1], 3, 1)
+					fechaFinal = datetime.date(parametrosP[1], 5, 31)
+				elif parametrosP[1] == 3:
+					fechaInicial = datetime.date(parametrosP[1], 6, 1)
+					fechaFinal = datetime.date(parametrosP[1], 8, 31)
+				else:
+					fechaInicial = datetime.date(parametrosP[1], 9, 1)
+					fechaFinal = datetime.date(parametrosP[1], 11, 30)
+				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 6:
+				#Trimestre Estandar
+				if parametrosP[0] == 1:
+					fechaInicial = datetime.date(parametrosP[1], 1, 1)
+					fechaFinal = datetime.date(parametrosP[1], 3, 31)
+				elif parametrosP[1] == 2:
+					fechaInicial = datetime.date(parametrosP[1], 4, 1)
+					fechaFinal = datetime.date(parametrosP[1], 6, 30)
+				elif parametrosP[1] == 3:
+					fechaInicial = datetime.date(parametrosP[1], 7, 1)
+					fechaFinal = datetime.date(parametrosP[1], 9, 30)
+				else:
+					fechaInicial = datetime.date(parametrosP[1], 10, 1)
+					fechaFinal = datetime.date(parametrosP[1], 12, 31)
+				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			else:
+				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [parametrosP[0], parametrosP[1]])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos		
+		except Exception, e:
+			print e
+
+		

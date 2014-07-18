@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from bottle import *
 
 import estructuraLectura as esl
@@ -32,6 +33,8 @@ configuracionP.cargarConfiguracion(0, 0)
 dtaevento = dtev.EventoDao()
 dtaregistro = dtreg.RegistroDao()
 
+#Objeto Acumulador
+objAcumulador = acu.acumulado()
 
 @route('/')
 def indexApp():
@@ -184,27 +187,68 @@ def prepareAcumulate():
 @route('/buscarAcumulado', method='POST')
 def busquedaAcumulado():
 	estacionSeleccionada = int(request.forms.estacionselect)
-	opcionSeleccionada = int(request.forms.estacionselect)
+	opcionSeleccionada = int(request.forms.opcionselect)
 	if opcionSeleccionada ==1:
-		parametro = request.forms.fecha
+		parametro = str(request.forms.fecha)
+		cadenaParametrizadaP = "Diario " + parametro
 	elif opcionSeleccionada == 2:
-		parametro = request.forms.mes		
+		parametro = str(request.forms.mes)
+		deriv = parametro.split("-")
+		cadenaParametrizadaP = objAcumulador.entregarMes(int(deriv[1])) + " " +deriv[0]
 	elif opcionSeleccionada == 3:
-		parametro = request.forms.ano
+		parametro = str(request.forms.ano)
+		cadenaParametrizadaP = "Año " + parametro
 	elif opcionSeleccionada == 4:
 		parametro = [int(request.forms.semestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Semestre " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
 	elif opcionSeleccionada == 5:
+		#Trimestre Bimodal
 		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
+	elif opcionSeleccionada == 6:
+		#Trimestre Estandar
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
 	else:
 		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
+		cadenaParametrizadaP = "Personalizada: " + str(request.forms.fechainicial) + " " + str(request.forms.fechafinal)
+		
+	registrosEncontrados = dtaregistro.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
+	acumuladoObtenido = objAcumulador.calcularAcumuladoMagnitudRegistros(registrosEncontrados)
+	return template('acumuladoObtenido.tpl', acumulado=acumuladoObtenido, cadenaParametrizada=cadenaParametrizadaP)
 
-	dtaregistro.busca
 
-
-
-
-
-
+@route('/buscarAcumuladoEventos', method='POST')
+def busquedaAcumulado():
+	estacionSeleccionada = int(request.forms.estacionselect)
+	opcionSeleccionada = int(request.forms.opcionselect)
+	if opcionSeleccionada ==1:
+		parametro = str(request.forms.fecha)
+		cadenaParametrizadaP = "Diario " + parametro
+	elif opcionSeleccionada == 2:
+		parametro = str(request.forms.mes)
+		deriv = parametro.split("-")
+		cadenaParametrizadaP = objAcumulador.entregarMes(int(deriv[1])) + " " +deriv[0]
+	elif opcionSeleccionada == 3:
+		parametro = str(request.forms.ano)
+		cadenaParametrizadaP = "Año " + parametro
+	elif opcionSeleccionada == 4:
+		parametro = [int(request.forms.semestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Semestre " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
+	elif opcionSeleccionada == 5:
+		#Trimestre Bimodal
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
+	elif opcionSeleccionada == 6:
+		#Trimestre Estandar
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
+	else:
+		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
+		cadenaParametrizadaP = "Personalizada: Fecha Inicial: " + str(request.forms.fechainicial) + " Fecha Final: " + str(request.forms.fechafinal)
+	eventosEncontrados = dtaevento.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
+	resultadosObtenidos = objAcumulador.calculoGeneralAcumuladoEventos(eventosEncontrados)
+	return template('acumuladoObtenidoEventos.tpl', resultados=resultadosObtenidos, cadenaParametrizada=cadenaParametrizadaP)
 
 
 
@@ -212,6 +256,11 @@ def busquedaAcumulado():
 def vistaAcumulado():
 	vectorEstaciones = configuracionP.cargarEstaciones()
 	return template('sacumuladod.tpl', estaciones=vectorEstaciones)
+
+@route('/tacumuladoeventos')
+def vistaAcumulado():
+	vectorEstaciones = configuracionP.cargarEstaciones()
+	return template('sacumuladodeventos.tpl', estaciones=vectorEstaciones)
 
 @route('/tconfiguracion')
 def vistaConfiguracion():

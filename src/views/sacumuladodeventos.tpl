@@ -8,11 +8,11 @@
 	
 	<div class="row">
 		<div class="col-xs-12 col-md-8">
-			<h3>Acumulados de Registros</h3><br>
-			
+			<h3>Acumulados de Eventos</h3><br>
+
 			<h4>SIPREM es capaz de entregarle a usted los acumulados de las precipitaciones según su necesidad, seleccione el tipo de acumulado que desea conocer y llene los datos necesarios para poder realizar su solicitud.</h4><br>
 
-			<form role="form" action="/buscarAcumulado" method="post">
+			<form role="form" action="/buscarAcumuladoEventos" method="post">
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">

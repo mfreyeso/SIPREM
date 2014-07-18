@@ -10,7 +10,6 @@
 		          	<li><a href="/eventosFiltro">Eventos(Busqueda Avanzada)</a></li>
 		          </ul>
 		        </li>
-
 	  			<li><a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuración<span class="caret"></span></a>
 		          <ul class="dropdown-menu">
 		          	<li><a href="/tconfiguracion">Administrar Configuraciones</a></li>
@@ -23,7 +22,13 @@
 		            <li><a href="#">Bodega de Datos</a></li>
 		          </ul>
 		        </li>
-	  			<li><a href="/tacumulado">Acumulados de Registros</a></li>
+
+		        <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">Acumulados<span class="caret"></span></a>
+		          <ul class="dropdown-menu">
+		          	<li><a href="/tacumulado">Acumulados de Registros</a></li>
+		          	<li><a href="/tacumuladoeventos">Acumulados de Eventos</a></li>
+		          </ul>
+		        </li>
 	  			<li><a href="/tresumen">Resumen de Eventos</a></li>
 	  			<li><a class="dropdown-toggle" data-toggle="dropdown">Indicador A25<span class="caret"></span></a>
 		          <ul class="dropdown-menu">

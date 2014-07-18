@@ -1,10 +1,8 @@
 class resumen(object):
 	
-	def __init__(self, coleccionEventosP, jornadasP, categoriasP):
+	def __init__(self):
 		super(resumen, self).__init__()
-		self.coleccionEventos = coleccionEventosP
-		self.listaJornadas = jornadasP
-		self.listaCategorias = categoriasP
+		
 
 	def entregarColeccionEventos(self):
 		return self.coleccionEventos
@@ -856,3 +854,81 @@ class resumen(object):
 		return totalesCompletos
 
 
+	def generarResumenEventos(self, opcionResumenP, parametrosP, estacionIdP, jornadasP, categoriasP):
+
+
+	def crearResumenJornadas		
+
+
+	def crearResumenCategorias(self, opcionResumenP, parametrosP, estacionIdP, categoriasP):
+		try:
+			macaron.macaronage("siprem.db")
+			estacionDaoP = models.Estacion.get(estacionIdP)
+			if opcionBusquedaP == 1:
+				#Aqui deberia definir la estructura que manejaria para cada caso
+				# y Aqui iniciaria la iteracion sobre cada Categoria en este caso...
+				# El contenido de la iteracion consiste en ejecutar las sentencias en busca de eventos con la categoria semjante
+				#Recordar que se obtienen los dao eventos que cumplen pero tan solo interesa cuantos son y ese sera el numero que
+				#interesara
+				#Teniedo en cuenta que si obtengo todos los datos en una variable la deberia enviar para sacar los maximos....
+				eventosDao = estacionDaoP.eventos.select("fecha = ?", [parametrosP])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 2:
+				eventosDao = estacionDaoP.eventos.select("strftime('%Y-%d', fecha) = ?", [parametrosP])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 3:
+				eventosDao = estacionDaoP.eventos.select("strftime('%Y', fecha) = ?", [parametrosP])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 4:
+				if parametrosP[0] == 1:
+					fechaInicial = datetime.date(parametrosP[1], 1, 1)
+					fechaFinal = datetime.date(parametrosP[1], 6, 30)
+				else:
+					fechaInicial = datetime.date(parametrosP[1], 7, 1)
+					fechaFinal = datetime.date(parametrosP[1], 12, 31)
+				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 5:
+				#Trimestre Bimodal
+				if parametrosP[0] == 1:
+					fechaInicial = datetime.date((parametrosP[1]-1), 12, 1)
+					fechaFinal = datetime.date(parametrosP[1], 2, self.febreroBisiesto())
+				elif parametrosP[1] == 2:
+					fechaInicial = datetime.date(parametrosP[1], 3, 1)
+					fechaFinal = datetime.date(parametrosP[1], 5, 31)
+				elif parametrosP[1] == 3:
+					fechaInicial = datetime.date(parametrosP[1], 6, 1)
+					fechaFinal = datetime.date(parametrosP[1], 8, 31)
+				else:
+					fechaInicial = datetime.date(parametrosP[1], 9, 1)
+					fechaFinal = datetime.date(parametrosP[1], 11, 30)
+				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			elif opcionBusquedaP == 6:
+				#Trimestre Estandar
+				if parametrosP[0] == 1:
+					fechaInicial = datetime.date(parametrosP[1], 1, 1)
+					fechaFinal = datetime.date(parametrosP[1], 3, 31)
+				elif parametrosP[1] == 2:
+					fechaInicial = datetime.date(parametrosP[1], 4, 1)
+					fechaFinal = datetime.date(parametrosP[1], 6, 30)
+				elif parametrosP[1] == 3:
+					fechaInicial = datetime.date(parametrosP[1], 7, 1)
+					fechaFinal = datetime.date(parametrosP[1], 9, 30)
+				else:
+					fechaInicial = datetime.date(parametrosP[1], 10, 1)
+					fechaFinal = datetime.date(parametrosP[1], 12, 31)
+				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos
+			else:
+				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [parametrosP[0], parametrosP[1]])
+				eventos = self.transformarEventosModelo(eventosDao)
+				return eventos		
+		except Exception, e:
+			print e
