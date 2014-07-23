@@ -52,7 +52,7 @@ class RegistroDao(object):
 				registros = self.transformarRegistros(registrosDao)
 				return registros
 			elif opcionBusquedaP == 2:
-				registrosDao = estacionDaoP.estacionreg.select("strftime('%Y-%d', fecha) = ?", [parametrosP])
+				registrosDao = estacionDaoP.estacionreg.select("strftime('%Y-%m', fecha) = ?", [parametrosP])
 				registros = self.transformarRegistros(registrosDao)
 				return registros
 			elif opcionBusquedaP == 3:

@@ -2,7 +2,8 @@
 from bottle import *
 
 import estructuraLectura as esl
-import resumen as rev
+#import resumen as rev
+import resumenred as rev
 import acumulado as acu
 import categoria as cat
 import jornada as jor
@@ -250,6 +251,43 @@ def busquedaAcumulado():
 	resultadosObtenidos = objAcumulador.calculoGeneralAcumuladoEventos(eventosEncontrados)
 	return template('acumuladoObtenidoEventos.tpl', resultados=resultadosObtenidos, cadenaParametrizada=cadenaParametrizadaP)
 
+@route('/crearResumen', method='POST')
+def crearResumen():
+	objresumen = rev.resumen()
+	vJornadas = configuracionP.obtenerJornadas()
+	vCategorias = configuracionP.obtenerCategorias()
+
+	estacionSeleccionada = int(request.forms.estacionselect)
+	opcionSeleccionada = int(request.forms.opcionselect)
+	if opcionSeleccionada ==1:
+		parametro = str(request.forms.fecha)
+		cadenaParametrizadaP = "Diario " + parametro
+	elif opcionSeleccionada == 2:
+		parametro = str(request.forms.mes)
+		deriv = parametro.split("-")
+		cadenaParametrizadaP = objAcumulador.entregarMes(int(deriv[1])) + " " +deriv[0]
+	elif opcionSeleccionada == 3:
+		parametro = str(request.forms.ano)
+		cadenaParametrizadaP = "Año " + parametro
+	elif opcionSeleccionada == 4:
+		parametro = ["-", int(request.forms.ano)]
+		cadenaParametrizadaP = "Semestral " + str(parametro[1])
+	elif opcionSeleccionada == 5:
+		#Trimestre Bimodal
+		parametro = ["-", int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestral Bimodal " + str(parametro[1])
+	elif opcionSeleccionada == 6:
+		#Trimestre Estandar
+		parametro = ["-", int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestral Estandar " + str(parametro[1])
+	elif opcionSeleccionada == 7:
+		parametro = [int(request.forms.anoi), int(request.forms.anof)]
+		cadenaParametrizadaP = "Multianual " + str(request.forms.anoi) + "-" + str(request.forms.anof)
+	else:
+		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
+		cadenaParametrizadaP = "Personalizada: Fecha Inicial: " + str(request.forms.fechainicial) + " Fecha Final: " + str(request.forms.fechafinal)
+	resumenObtenido = objresumen.generarResumenEventos(opcionSeleccionada, parametro, estacionSeleccionada, vJornadas, vCategorias)
+	print resumenObtenido
 
 
 @route('/tacumulado')
@@ -261,6 +299,11 @@ def vistaAcumulado():
 def vistaAcumulado():
 	vectorEstaciones = configuracionP.cargarEstaciones()
 	return template('sacumuladodeventos.tpl', estaciones=vectorEstaciones)
+
+@route('/topcresumen')
+def vistaResumenOpciones():
+	vectorEstaciones = configuracionP.cargarEstaciones()
+	return template('presumeneventos.tpl', estaciones=vectorEstaciones)
 
 @route('/tconfiguracion')
 def vistaConfiguracion():

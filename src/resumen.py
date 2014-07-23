@@ -1,3 +1,6 @@
+import daoevento as dev
+import datetime
+
 class resumen(object):
 	
 	def __init__(self):
@@ -854,81 +857,230 @@ class resumen(object):
 		return totalesCompletos
 
 
-	def generarResumenEventos(self, opcionResumenP, parametrosP, estacionIdP, jornadasP, categoriasP):
-
-
-	def crearResumenJornadas		
-
-
 	def crearResumenCategorias(self, opcionResumenP, parametrosP, estacionIdP, categoriasP):
 		try:
 			macaron.macaronage("siprem.db")
 			estacionDaoP = models.Estacion.get(estacionIdP)
 			if opcionBusquedaP == 1:
-				#Aqui deberia definir la estructura que manejaria para cada caso
-				# y Aqui iniciaria la iteracion sobre cada Categoria en este caso...
-				# El contenido de la iteracion consiste en ejecutar las sentencias en busca de eventos con la categoria semjante
-				#Recordar que se obtienen los dao eventos que cumplen pero tan solo interesa cuantos son y ese sera el numero que
-				#interesara
-				#Teniedo en cuenta que si obtengo todos los datos en una variable la deberia enviar para sacar los maximos....
-				eventosDao = estacionDaoP.eventos.select("fecha = ?", [parametrosP])
-				eventos = self.transformarEventosModelo(eventosDao)
-				return eventos
+				resultados = []
+				for categoria in categoriasP:
+					nombreCategoria = categoria.entregarEtiqueta()
+					eventosDao = estacionDaoP.eventos.select("fecha = ? and tipoprec = ?", [parametrosP, nombreCategoria])
+					resultados.append(eventosDao.count())
+				return resultados
 			elif opcionBusquedaP == 2:
-				eventosDao = estacionDaoP.eventos.select("strftime('%Y-%d', fecha) = ?", [parametrosP])
-				eventos = self.transformarEventosModelo(eventosDao)
-				return eventos
+				resultados = []
+				for categoria in categoriasP:
+					nombreCategoria = categoria.entregarEtiqueta()
+					dias = ["-"]
+					for i in range(1, (self.diasMes(fecha) + 1)):
+						eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ? and strftime('%d', fecha) = ? and tipoprec = ?", [parametrosP, str(i), nombreCategoria])
+						dias.append(eventosDao.count())
+					resultados.append(dias)
+				return resultados
 			elif opcionBusquedaP == 3:
-				eventosDao = estacionDaoP.eventos.select("strftime('%Y', fecha) = ?", [parametrosP])
-				eventos = self.transformarEventosModelo(eventosDao)
-				return eventos
+				resultados = []
+				for categoria in categoriasP:
+					nombreCategoria = categoria.entregarEtiqueta()
+					meses =["-"]
+					for i in range(1, 13):
+						eventosDao = estacionDaoP.eventos.select("strftime('%Y', fecha) = ? and strftime('%m', fecha) = ? and tipoprec = ?", [parametrosP, str(i), nombreCategoria])
+						meses.append(eventosDao.count())
+					resultados.append(meses)
+				return resultados
 			elif opcionBusquedaP == 4:
-				if parametrosP[0] == 1:
-					fechaInicial = datetime.date(parametrosP[1], 1, 1)
-					fechaFinal = datetime.date(parametrosP[1], 6, 30)
-				else:
-					fechaInicial = datetime.date(parametrosP[1], 7, 1)
-					fechaFinal = datetime.date(parametrosP[1], 12, 31)
-				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
-				eventos = self.transformarEventosModelo(eventosDao)
-				return eventos
+				resultados = []
+				for i in range(1, 3):
+					if i == 1:
+						fechaInicial = datetime.date(parametrosP[1], 1, 1)
+						fechaFinal = datetime.date(parametrosP[1], 6, 30)
+					else:
+						fechaInicial = datetime.date(parametrosP[1], 7, 1)
+						fechaFinal = datetime.date(parametrosP[1], 12, 31)
+					semestre = []
+					for categoria  in categoriasP:
+						nombreCategoria = categoria.entregarEtiqueta()
+						eventosDao = estacionDaoP.eventos.select("fecha between ? and ? and tipoprec = ?", [str(fechaInicial), str(fechaFinal), nombreCategoria])
+						semestre.append(eventosDao.count())
+					resultados.append(semestre)
+				return resultados
 			elif opcionBusquedaP == 5:
 				#Trimestre Bimodal
-				if parametrosP[0] == 1:
-					fechaInicial = datetime.date((parametrosP[1]-1), 12, 1)
-					fechaFinal = datetime.date(parametrosP[1], 2, self.febreroBisiesto())
-				elif parametrosP[1] == 2:
-					fechaInicial = datetime.date(parametrosP[1], 3, 1)
-					fechaFinal = datetime.date(parametrosP[1], 5, 31)
-				elif parametrosP[1] == 3:
-					fechaInicial = datetime.date(parametrosP[1], 6, 1)
-					fechaFinal = datetime.date(parametrosP[1], 8, 31)
-				else:
-					fechaInicial = datetime.date(parametrosP[1], 9, 1)
-					fechaFinal = datetime.date(parametrosP[1], 11, 30)
-				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
-				eventos = self.transformarEventosModelo(eventosDao)
-				return eventos
+				resultados = []
+				for i in range(1, 5):
+					if i == 1:
+						fechaInicial = datetime.date((parametrosP[1]-1), 12, 1)
+						fechaFinal = datetime.date(parametrosP[1], 2, self.febreroBisiesto())
+					elif i == 2:
+						fechaInicial = datetime.date(parametrosP[1], 3, 1)
+						fechaFinal = datetime.date(parametrosP[1], 5, 31)
+					elif i == 3:
+						fechaInicial = datetime.date(parametrosP[1], 6, 1)
+						fechaFinal = datetime.date(parametrosP[1], 8, 31)
+					else:
+						fechaInicial = datetime.date(parametrosP[1], 9, 1)
+						fechaFinal = datetime.date(parametrosP[1], 11, 30)
+					trimestre =[]
+					for categoria in categoriasP:
+						nombreCategoria = categoria.entregarEtiqueta()
+						eventosDao = estacionDaoP.eventos.select("fecha between ? and ? and tipoprec = ?", [str(fechaInicial), str(fechaFinal), nombreCategoria])
+						trimestre.append(eventosDao.count())
+					resultados.append(trimestre)
+				return resultados
 			elif opcionBusquedaP == 6:
 				#Trimestre Estandar
-				if parametrosP[0] == 1:
-					fechaInicial = datetime.date(parametrosP[1], 1, 1)
-					fechaFinal = datetime.date(parametrosP[1], 3, 31)
-				elif parametrosP[1] == 2:
-					fechaInicial = datetime.date(parametrosP[1], 4, 1)
-					fechaFinal = datetime.date(parametrosP[1], 6, 30)
-				elif parametrosP[1] == 3:
-					fechaInicial = datetime.date(parametrosP[1], 7, 1)
-					fechaFinal = datetime.date(parametrosP[1], 9, 30)
-				else:
-					fechaInicial = datetime.date(parametrosP[1], 10, 1)
-					fechaFinal = datetime.date(parametrosP[1], 12, 31)
-				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal)])
-				eventos = self.transformarEventosModelo(eventosDao)
-				return eventos
+				resultados = []
+				for i in range(1, 5):					
+					if i == 1:
+						fechaInicial = datetime.date(parametrosP[1], 1, 1)
+						fechaFinal = datetime.date(parametrosP[1], 3, 31)
+					elif i == 2:
+						fechaInicial = datetime.date(parametrosP[1], 4, 1)
+						fechaFinal = datetime.date(parametrosP[1], 6, 30)
+					elif i == 3:
+						fechaInicial = datetime.date(parametrosP[1], 7, 1)
+						fechaFinal = datetime.date(parametrosP[1], 9, 30)
+					else:
+						fechaInicial = datetime.date(parametrosP[1], 10, 1)
+						fechaFinal = datetime.date(parametrosP[1], 12, 31)
+					trimestre = []
+					for categoria in categoriasP:
+						nombreCategoria = categoria.entregarEtiqueta()
+						eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal), nombreCategoria])
+						trimestre.add(eventosDao.count())
+					resultados.append(trimestre)
+				return resultados
+			elif opcionBusquedaP == 7:
+				#Multianual
+				resultados = []
+				for i in range(parametrosP[0], (parametrosP[0] + 1)):
+					ano = []
+					for categoria in categoriasP:
+						nombreCategoria = categoria.entregarEtiqueta()
+						eventosDao = estacionDaoP.eventos.select("strftime('%Y', fecha) = ? and tipoprec = ?", [i, nombreCategoria])
+						ano.append(eventosDao.count())
+					resultados.append(ano)
+				return resultados 
 			else:
-				eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [parametrosP[0], parametrosP[1]])
-				eventos = self.transformarEventosModelo(eventosDao)
-				return eventos		
+				resultados = []
+				for categoria in categoriasP:
+					nombreCategoria = categoria.entregarEtiqueta()
+					eventosDao = estacionDaoP.eventos.select("fecha between ? and ? and tipoprec = ?", [parametrosP[0], parametrosP[1]], nombreCategoria)
+					resultados.append(eventosDao.count())
+				return resultados		
+		except Exception, e:
+			print e
+
+	def crearResumenJornadas(self, opcionResumenP, parametrosP, estacionIdP, jornadasP):
+		try:
+			macaron.macaronage("siprem.db")
+			estacionDaoP = models.Estacion.get(estacionIdP)
+			if opcionBusquedaP == 1:
+				resultados = []
+				for jornada in jornadasP:
+					nombreJornada = jornada.entregarEtiquetaJornada()
+					eventosDao = estacionDaoP.eventos.select("fecha = ? and tipoprec = ?", [parametrosP, nombreJornada])
+					resultados.append(eventosDao.count())
+				return resultados
+			elif opcionBusquedaP == 2:
+				resultados = []
+				for jornada in jornadasP:
+					nombreJornada = jornada.entregarEtiquetaJornada()
+					dias = ["-"]
+					for i in range(1, (self.diasMes(fecha) + 1)):
+						eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ? and strftime('%d', fecha) = ? and tipoprec = ?", [parametrosP, str(i), nombreJornada])
+						dias.append(eventosDao.count())
+					resultados.append(dias)
+				return resultados
+			elif opcionBusquedaP == 3:
+				resultados = []
+				for jornada in jornadasP:
+					nombreJornada = jornada.entregarEtiquetaJornada()
+					meses =["-"]
+					for i in range(1, 13):
+						eventosDao = estacionDaoP.eventos.select("strftime('%Y', fecha) = ? and strftime('%m', fecha) = ? and tipoprec = ?", [parametrosP, str(i), nombreJornada])
+						meses.append(eventosDao.count())
+					resultados.append(meses)
+				return resultados
+			elif opcionBusquedaP == 4:
+				resultados = []
+				for i in range(1, 3):
+					if i == 1:
+						fechaInicial = datetime.date(parametrosP[1], 1, 1)
+						fechaFinal = datetime.date(parametrosP[1], 6, 30)
+					else:
+						fechaInicial = datetime.date(parametrosP[1], 7, 1)
+						fechaFinal = datetime.date(parametrosP[1], 12, 31)
+					semestre = []
+					for jornada  in jornadasP:
+						nombreJornada = jornada.entregarEtiquetaJornada()
+						eventosDao = estacionDaoP.eventos.select("fecha between ? and ? and tipoprec = ?", [str(fechaInicial), str(fechaFinal), nombreJornada])
+						semestre.append(eventosDao.count())
+					resultados.append(semestre)
+				return resultados
+			elif opcionBusquedaP == 5:
+				#Trimestre Bimodal
+				resultados = []
+				for i in range(1, 5):
+					if i == 1:
+						fechaInicial = datetime.date((parametrosP[1]-1), 12, 1)
+						fechaFinal = datetime.date(parametrosP[1], 2, self.febreroBisiesto())
+					elif i == 2:
+						fechaInicial = datetime.date(parametrosP[1], 3, 1)
+						fechaFinal = datetime.date(parametrosP[1], 5, 31)
+					elif i == 3:
+						fechaInicial = datetime.date(parametrosP[1], 6, 1)
+						fechaFinal = datetime.date(parametrosP[1], 8, 31)
+					else:
+						fechaInicial = datetime.date(parametrosP[1], 9, 1)
+						fechaFinal = datetime.date(parametrosP[1], 11, 30)
+					trimestre =[]
+					for jornada in jornadasP:
+						nombreJornada = jornada.entregarEtiquetaJornada()
+						eventosDao = estacionDaoP.eventos.select("fecha between ? and ? and tipoprec = ?", [str(fechaInicial), str(fechaFinal), nombreJornada])
+						trimestre.append(eventosDao.count())
+					resultados.append(trimestre)
+				return resultados
+			elif opcionBusquedaP == 6:
+				#Trimestre Estandar
+				resultados = []
+				for i in range(1, 5):					
+					if i == 1:
+						fechaInicial = datetime.date(parametrosP[1], 1, 1)
+						fechaFinal = datetime.date(parametrosP[1], 3, 31)
+					elif i == 2:
+						fechaInicial = datetime.date(parametrosP[1], 4, 1)
+						fechaFinal = datetime.date(parametrosP[1], 6, 30)
+					elif i == 3:
+						fechaInicial = datetime.date(parametrosP[1], 7, 1)
+						fechaFinal = datetime.date(parametrosP[1], 9, 30)
+					else:
+						fechaInicial = datetime.date(parametrosP[1], 10, 1)
+						fechaFinal = datetime.date(parametrosP[1], 12, 31)
+					trimestre = []
+					for jornada in jornadasP:
+						nombreJornada = jornada.entregarEtiquetaJornada()
+						eventosDao = estacionDaoP.eventos.select("fecha between ? and ?", [str(fechaInicial), str(fechaFinal), nombreJornada])
+						trimestre.add(eventosDao.count())
+					resultados.append(trimestre)
+				return resultados
+			elif opcionBusquedaP == 7:
+				#Multianual
+				resultados = []
+				for i in range(parametrosP[0], (parametrosP[0] + 1)):
+					ano = []
+					for jornada in jornadasP:
+						nombreJornada = jornada.entregarEtiquetaJornada()
+						eventosDao = estacionDaoP.eventos.select("strftime('%Y', fecha) = ? and tipoprec = ?", [i, nombreJornada])
+						ano.append(eventosDao.count())
+					resultados.append(ano)
+				return resultados 
+			else:
+				resultados = []
+				for jornada in jornadasP:
+					nombreJornada = jornada.entregarEtiquetaJornada()
+					eventosDao = estacionDaoP.eventos.select("fecha between ? and ? and tipoprec = ?", [parametrosP[0], parametrosP[1]], nombreJornada)
+					resultados.append(eventosDao.count())
+				return resultados		
 		except Exception, e:
 			print e

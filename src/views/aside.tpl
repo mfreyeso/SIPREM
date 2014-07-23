@@ -29,7 +29,7 @@
 		          	<li><a href="/tacumuladoeventos">Acumulados de Eventos</a></li>
 		          </ul>
 		        </li>
-	  			<li><a href="/tresumen">Resumen de Eventos</a></li>
+	  			<li><a href="/topcresumen">Resumen de Eventos</a></li>
 	  			<li><a class="dropdown-toggle" data-toggle="dropdown">Indicador A25<span class="caret"></span></a>
 		          <ul class="dropdown-menu">
 		          	<li><a href="#">Configuración de Indicador</a></li>

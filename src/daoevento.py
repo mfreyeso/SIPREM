@@ -99,7 +99,7 @@ class EventoDao(object):
 				eventos = self.transformarEventosModelo(eventosDao)
 				return eventos
 			elif opcionBusquedaP == 2:
-				eventosDao = estacionDaoP.eventos.select("strftime('%Y-%d', fecha) = ?", [parametrosP])
+				eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ?", [parametrosP])
 				eventos = self.transformarEventosModelo(eventosDao)
 				return eventos
 			elif opcionBusquedaP == 3:
@@ -157,4 +157,10 @@ class EventoDao(object):
 		except Exception, e:
 			print e
 
+	def febreroBisiesto(self, anoP):
+		if( anoP % 4 == 0 and anoP % 100 != 0 or anoP % 400 == 0):
+			#Ano Bisiesto
+			return 29
+		else:
+			return 28
 		
