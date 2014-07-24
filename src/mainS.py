@@ -13,6 +13,7 @@ import configuracion
 #Se importan las clases de acceso a datos
 import daoevento as dtev
 import daoregistro as dtreg
+import daoestacion as des
 
 import macaron
 
@@ -257,7 +258,13 @@ def crearResumen():
 	vJornadas = configuracionP.obtenerJornadas()
 	vCategorias = configuracionP.obtenerCategorias()
 
+	#Se crea esta variable vacia si no es utiliza el caso para renderizar resultados
+	dias = 0
+
 	estacionSeleccionada = int(request.forms.estacionselect)
+	daoEstacion = des.EstacionDao()
+	nombreEstacionP = str(daoEstacion.obtenerEstacion(int(estacionSeleccionada)).nombre)
+
 	opcionSeleccionada = int(request.forms.opcionselect)
 	if opcionSeleccionada ==1:
 		parametro = str(request.forms.fecha)
@@ -265,7 +272,8 @@ def crearResumen():
 	elif opcionSeleccionada == 2:
 		parametro = str(request.forms.mes)
 		deriv = parametro.split("-")
-		cadenaParametrizadaP = objAcumulador.entregarMes(int(deriv[1])) + " " +deriv[0]
+		dias = objresumen.diasMes(parametro)
+		cadenaParametrizadaP = objAcumulador.entregarMes(int(deriv[1])) + " " + deriv[0]
 	elif opcionSeleccionada == 3:
 		parametro = str(request.forms.ano)
 		cadenaParametrizadaP = "Año " + parametro
@@ -282,13 +290,13 @@ def crearResumen():
 		cadenaParametrizadaP = "Trimestral Estandar " + str(parametro[1])
 	elif opcionSeleccionada == 7:
 		parametro = [int(request.forms.anoi), int(request.forms.anof)]
-		cadenaParametrizadaP = "Multianual " + str(request.forms.anoi) + "-" + str(request.forms.anof)
+		cadenaParametrizadaP = "Multianual " + str(request.forms.anoi) + " - " + str(request.forms.anof)
 	else:
 		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
 		cadenaParametrizadaP = "Personalizada: Fecha Inicial: " + str(request.forms.fechainicial) + " Fecha Final: " + str(request.forms.fechafinal)
 	resumenObtenido = objresumen.generarResumenEventos(opcionSeleccionada, parametro, estacionSeleccionada, vJornadas, vCategorias)
 	print resumenObtenido
-
+	return template('resultadoresumen.tpl', opcionrs = opcionSeleccionada, resultados = resumenObtenido, cadenaParametrizada = cadenaParametrizadaP, categorias=vCategorias, jornadas = vJornadas, nombreEstacion = nombreEstacionP, diasMes = dias, vAnual = parametro)
 
 @route('/tacumulado')
 def vistaAcumulado():

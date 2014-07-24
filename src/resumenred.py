@@ -116,7 +116,7 @@ class resumen(object):
 			elif opcionResumenP == 7:
 				#Multianual
 				resultados = []
-				for i in range(parametrosP[0], (parametrosP[0] + 1)):
+				for i in range(parametrosP[0], (parametrosP[1] + 1)):
 					ano = []
 					for categoria in categoriasP:
 						nombreCategoria = categoria.entregarEtiqueta()
@@ -234,7 +234,7 @@ class resumen(object):
 			elif opcionResumenP == 7:
 				#Multianual
 				resultados = []
-				for i in range(parametrosP[0], (parametrosP[0] + 1)):
+				for i in range(parametrosP[0], (parametrosP[1] + 1)):
 					ano = []
 					for jornada in jornadasP:
 						nombreJornada = jornada.entregarEtiquetaJornada()
@@ -334,7 +334,7 @@ class resumen(object):
 			elif opcionResumenP == 7:
 				#Multianual
 				anos = []
-				for i in range(parametrosP[0], (parametrosP[0] + 1)):
+				for i in range(parametrosP[0], (parametrosP[1] + 1)):
 					eventosDao = estacionDaoP.eventos.select("strftime('%Y', fecha) = ?", [str(i)])
 					anos.append(self.determinarMaximos(eventosDao))
 				resultados = anos
