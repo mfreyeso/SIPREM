@@ -113,11 +113,6 @@ class ConfiguracionMother(object):
 			objCategoria = cat.categoria(etiqueta, metrica)
 			self.entregarCategorias().append(objCategoria)
 
-	def cargarEstaciones(self):
-		macaron.macaronage("siprem.db")
-		estaciones= models.Estacion.all()
-		return estaciones
-
 	"""Metodos de manipulacion de datos sobre la Base de Datos"""
 
 	def adicionarJornadabd(self, etiquetaJornada, horaInicioP, horaFinP):

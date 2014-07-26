@@ -34,6 +34,7 @@ configuracionP.cargarConfiguracion(0, 0)
 #Objeto de Acceso a Datos de Evento
 dtaevento = dtev.EventoDao()
 dtaregistro = dtreg.RegistroDao()
+dtaestacion = des.EstacionDao()
 
 #Objeto Acumulador
 objAcumulador = acu.acumulado()
@@ -72,22 +73,22 @@ def loadEvents():
 		objetosEventos = estructuraMain.entregarColeccionEventos()
 		return template('eventos.tpl', coleccionEventos=objetosEventos)
 	except Exception:
-		vectorEstaciones = configuracionP.cargarEstaciones()
+		vectorEstaciones = dtaestacion.cargarEstaciones()
 		return template('buscarEventosv2.tpl', estaciones=vectorEstaciones)
 
 @route('/archivoPlano')
 def cargaArchivoPlano():
-	vectorEstaciones = configuracionP.cargarEstaciones()
+	vectorEstaciones = dtaestacion.cargarEstaciones()
 	return template('cargaArchivo.tpl', estaciones=vectorEstaciones)
 
 @route('/eventos', method='GET')
 def eventos():
-	vectorEstaciones = configuracionP.cargarEstaciones()
+	vectorEstaciones = dtaestacion.cargarEstaciones()
 	return template('buscarEventosv2.tpl', estaciones=vectorEstaciones)
 
 @route('/eventosFiltro', method='GET')
 def eventos():
-	vectorEstaciones = configuracionP.cargarEstaciones()
+	vectorEstaciones = dtaestacion.cargarEstaciones()
 	vectorJornadas = configuracionP.entregarJornadas() 
 	vectorCategorias = configuracionP.entregarCategorias()
 	return template('buscarEventosAvanzado.tpl', estaciones=vectorEstaciones, jornadas=vectorJornadas, categorias=vectorCategorias)
@@ -300,17 +301,17 @@ def crearResumen():
 
 @route('/tacumulado')
 def vistaAcumulado():
-	vectorEstaciones = configuracionP.cargarEstaciones()
+	vectorEstaciones = dtaestacion.cargarEstaciones()
 	return template('sacumuladod.tpl', estaciones=vectorEstaciones)
 
 @route('/tacumuladoeventos')
 def vistaAcumulado():
-	vectorEstaciones = configuracionP.cargarEstaciones()
+	vectorEstaciones = dtaestacion.cargarEstaciones()
 	return template('sacumuladodeventos.tpl', estaciones=vectorEstaciones)
 
 @route('/topcresumen')
 def vistaResumenOpciones():
-	vectorEstaciones = configuracionP.cargarEstaciones()
+	vectorEstaciones = dtaestacion.cargarEstaciones()
 	return template('presumeneventos.tpl', estaciones=vectorEstaciones)
 
 @route('/tconfiguracion')
@@ -368,7 +369,7 @@ def adicionarJornada():
 
 @route('/tcarga')
 def vistaAcumulado():
-	vectorEstaciones = configuracionP.cargarEstaciones()
+	vectorEstaciones = dtaestacion.cargarEstaciones()
 	return template('cargaArchivo.tpl', estaciones=vectorEstaciones)
 
 @route('/static/:filename#.*#')
@@ -391,7 +392,8 @@ def construirReporteResumen():
 
 @route('/estaciones')
 def estacionesSIPREM():
-	return template('estaciones.tpl')
+	estacionesObtenidas = dtaestacion.obtenerEstaciones()
+	return template('estaciones.tpl', estaciones = estacionesObtenidas)
 
 
 run(host='localhost', port=8080)

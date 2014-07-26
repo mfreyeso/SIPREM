@@ -14,7 +14,7 @@
 			y el tipo de precipitación segun metricas definidas anteriormente. Utilice las opciones dispuestas
 			para personalizar el resumen de eventos deseado.</h4><br>
 
-			<form role="form" action="/crearResumen" method="post">
+			<form role="form" id="resumeneventos" action="/crearResumen" method="post">
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
@@ -108,7 +108,7 @@
 							    		case 7:
 							    			var inputsDi ="<div class='form-group'>\
 							                    <label for='diasel'>Año Inicial</label>\
-							                	<input class='form-control' value='2002' type='number' name='anoi' min='2002'>\
+							                	<input class='form-control' value='2002' type='number' name='anoi' id='anoi' min='2002'>\
 							                	</div>\
 							                	<div class='form-group'>\
 							                    <label for='diasel'>Año Final</label>\
@@ -121,7 +121,7 @@
 							    		case 8:
 							    			var inputsDi = "<div class='form-group'>\
 							    				<label for='tipoacumulado'>Fecha Inicial</label>\
-							    				<input class='form-control' type='date' name='fechainicial'/><br>\
+							    				<input class='form-control' type='date' id='fechainicial' name='fechainicial'/><br>\
 							    				<label for='tipoacumulado'>Fecha Final</label>\
 							    				<input class='form-control' type='date' name='fechafinal'/>\
 							    				</div><br>";

@@ -23,17 +23,17 @@
 			%resultadosMaximos = resultados[2]
 			
 			<div>
-				<h3>Precipitaciones según Categoria</h3><br>
+				<h3>Precipitaciones según Categoria</h3>
 					%include('rescategoria.tpl', opcionr = opcionrs, resultados = resultadosCategoria, categoriasP = categorias, diasMesF = diasMes, vAnualF = vAnual)				
 			</div>
 
 			<div>
-				<h3>Precipitaciones según Jornada</h3><br>
-					
+				<h3>Precipitaciones según Jornada</h3>
+					%include('resjornada.tpl', opcionr = opcionrs, resultados = resultadosJornada, jornadasP = jornadas, diasMesF = diasMes, vAnualF = vAnual)					
 			</div>
 			<div>
-				<h3>Máximos Obtenidos</h3><br>
-				
+				<h3>Máximos Obtenidos</h3>
+				%include('resmaximo.tpl', opcionr = opcionrs, resultados = resultadosMaximos, diasMesF = diasMes, vAnualF = vAnual)				
 			</div>			
 		</div>
 	</div>

@@ -12,7 +12,7 @@
 
 			<h4>SIPREM es capaz de entregarle a usted los acumulados de las precipitaciones según su necesidad, seleccione el tipo de acumulado que desea conocer y llene los datos necesarios para poder realizar su solicitud.</h4><br>
 
-			<form role="form" action="/buscarAcumuladoEventos" method="post">
+			<form role="form" action="/buscarAcumuladoEventos" method="post" id="formacueventos">
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
@@ -130,7 +130,7 @@
 							    		case 7:
 							    			var inputsDi = "<div class='form-group'>\
 							    				<label for='tipoacumulado'>Fecha Inicial</label>\
-							    				<input class='form-control' type='date' name='fechainicial'/><br>\
+							    				<input class='form-control' type='date' name='fechainicial' id='fechainicial'/><br>\
 							    				<label for='tipoacumulado'>Fecha Final</label>\
 							    				<input class='form-control' type='date' name='fechafinal'/>\
 							    				</div><br>";

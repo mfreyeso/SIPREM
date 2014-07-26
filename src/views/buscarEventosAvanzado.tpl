@@ -12,7 +12,7 @@
 			<h4>Seleccione la estacion y defina un intervalo de fechas para poder realizar la busqueda de eventos
 			dentro de SIPREM.</h4><br>
 
-			<form role="form" action="/buscarEventosAvanzado" method="post">
+			<form role="form" action="/buscarEventosAvanzado" method="post" id="formbaeventos">
 				<div class="row">
            			<div class="col-md-4">
            				<div class="form-group">
@@ -27,7 +27,7 @@
 					<div class="col-md-4">
            				<div class="form-group">
 			                <label for="estacion">Fecha Inicial</label><br>
-			                <input type="date" name="fechainicial" class="form-control"/>
+			                <input type="date" name="fechainicial" class="form-control" id="fechainicial" />
 			           	</div>
 					</div>
 					<div class="col-md-4">
