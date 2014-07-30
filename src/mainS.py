@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from bottle import *
+import os, inspect, json
+import jsonparsers as jsp
 
 import estructuraLectura as esl
 #import resumen as rev
@@ -111,8 +113,6 @@ def buscarEventos():
 	categoria = str(request.forms.categoria)
 	eventosEncontrados = dtaevento.buscarEventosAvanzado(fechaInicial, fechaFinal, idEstacion, categoria, jornada)
 	return template('eventos.tpl', coleccionEventos=eventosEncontrados)
-
-
 
 @route('/tresumen')
 def resumen():
@@ -395,5 +395,73 @@ def estacionesSIPREM():
 	estacionesObtenidas = dtaestacion.obtenerEstaciones()
 	return template('estaciones.tpl', estaciones = estacionesObtenidas)
 
+
+@route('/crearEstacion', method="POST")
+def crearEstacion():
+	data = request.json
+	nombreEstacion = str(data['nombre'])
+	ubicacionEstacion = str(data['ubicacion'])
+	fechaEstacion = str(data['fecha'])
+	if dtaestacion.crearEstacion(nombreEstacion, ubicacionEstacion, fechaEstacion):
+		return json.dumps({'efect':"La estación fue creada con exito."})
+	else:
+		return json.dumps({'efect':"La estación no pudo ser creada en el sistema."})
+
+@route('/modificarEstacion', method="POST")
+def modificarEstacion():
+	data = request.json
+	nombreEstacion = str(data['nombre'])
+	ubicacionEstacion = str(data['ubicacion'])
+	fechaEstacion = str(data['fecha'])
+	ideEstacion = str(data['ide'])
+	estacionD = dtaestacion.obtenerEstacion(ideEstacion)
+	if dtaestacion.modificarEstacion(estacionD, nombreEstacion, ubicacionEstacion, fechaEstacion):
+		return json.dumps({'efect':"La estación fue actualizada con exito."})
+	else:
+		return json.dumps({'efect':"La estación no pudo ser actualizada."})
+
+@route('/desactivarEstacion', method="POST")
+def desactivarEstacion():
+	data = request.json
+	ideEstacion = str(data['ide'])
+	if dtaestacion.desactivarEstacion(ideEstacion):
+		return json.dumps({'efect':"La estación fue desactivada con exito."})
+	else:
+		return json.dumps({'efect':"La estación no pudo ser desactivada."})
+
+@route('/activarEstacion', method="POST")
+def activarEstacion():
+	data = request.json
+	ideEstacion = str(data['ide'])
+	if dtaestacion.activarEstacion(ideEstacion):
+		return json.dumps({'efect':"La estación fue reactivada con exito."})
+	else:
+		return json.dumps({'efect':"La estación no pudo ser reactivada."})
+
+@route('/estacionesDesactivadas', method="GET")
+def estacionesDesactivadas():
+	enconderJSON = jsp.MyEncoder()
+	estacionesDesactivadas = dtaestacion.obtenerEstacionesDesactivadas()
+	if estacionesDesactivadas != None:
+		resultado = {}
+		coleccionEstaciones=[]
+		for i in range(0, estacionesDesactivadas.count()):
+			dicestacion =  {'nombre': str(estacionesDesactivadas[i].nombre), 'ide': str(estacionesDesactivadas[i].id)}
+			coleccionEstaciones.append(dicestacion)
+		resultado['coleccion']=coleccionEstaciones
+		resultado['efect']="1"
+		return json.dumps(resultado)
+	else:
+		return json.dumps({'efect':"0"})
+
+@route('/obtenerEstacion', method="POST")
+def obtenerEstacion():
+	data = request.json
+	idEstacion = int(data['estacion'])
+	estacionEncontrada = dtaestacion.obtenerEstacion(idEstacion)
+	if estacionEncontrada != None:
+		return json.dumps({'efect': '1', 'estacion': {'nombre': str(estacionEncontrada.nombre), 'ubicacion': str(estacionEncontrada.ubicacion), 'fecha': str(estacionEncontrada.fechaoperacion)}})
+	else:
+		return json.dumps({'efect': '0'})
 
 run(host='localhost', port=8080)
