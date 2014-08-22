@@ -61,12 +61,20 @@ def loadFile():
 		estructuraMain.identificadorEventos()
 		listEventos = estructuraMain.entregarColeccionEventos()
 		listRegistros = estructuraMain.entregarEstructuraKernel()
-		mother.modificarEstructuraMain(estructuraMain)
-		dtaevento.almacenarEventos(listEventos, estacionSeleccionada)
-		dtaregistro.almacenarRegistros(listRegistros, estacionSeleccionada)
-		return template('eventos.tpl', coleccionEventos=listEventos)
-	else:
-		return template('errorCargaArchivo.tpl')
+		registrosValidos = dtaregistro.validarRegistros(listRegistros, estacionSeleccionada)
+		if len(registrosValidos) != 0:
+		#if registrosValidos != None:
+			dtaregistro.almacenarRegistros(registrosValidos, estacionSeleccionada)
+			eventosValidos = dtaevento.validarEventos(listEventos, estacionSeleccionada)
+			if eventosValidos != None:
+				dtaevento.almacenarEventos(eventosValidos, estacionSeleccionada)
+				return template('eventos.tpl', coleccionEventos=eventosValidos)
+			else:
+				return template('errorCargaArchivo.tpl', opcion=1)
+		else:
+			return template('errorCargaArchivo.tpl', opcion=1)
+	else:		
+		return template('errorCargaArchivo.tpl', opcion=2)
 
 @route('/cargarEventos', method='GET')
 def loadEvents():
@@ -314,59 +322,6 @@ def vistaResumenOpciones():
 	vectorEstaciones = dtaestacion.cargarEstaciones()
 	return template('presumeneventos.tpl', estaciones=vectorEstaciones)
 
-@route('/tconfiguracion')
-def vistaConfiguracion():
-	setConfiguraciones = configuracionP.obtenerConfiguraciones()
-	setJornadas = configuracionP.obtenerJornadas()
-	setCategorias = configuracionP.obtenerCategorias()
-	return template('configuracion.tpl', configuraciones=setConfiguraciones, categorias=setCategorias, jornadas=setJornadas)
-
-@route('/ajustarConfiguracion/<idconfiguracion>', method="GET")
-def cargarConfiguracion(idconfiguracion):
-	if configuracionP.cargarConfiguracion(1, idconfiguracion):
-		setConfiguraciones = configuracionP.obtenerConfiguraciones()
-		setJornadas = configuracionP.obtenerJornadas()
-		setCategorias = configuracionP.obtenerCategorias()
-		return template('index.tpl')
-	else:
-		print "Existieron Problemas"
-
-
-@route('/crearconfiguracion', method="POST")
-def adicionarConfiguracion():
-	nombreConfiguracion = request.forms.nombreC
-	tiempoDifEventos = int(request.forms.dfprec) / 5
-	posicionPrecipitacion = int(request.forms.psprec)
-	if configuracionP.adicionarConfiguracion(1, nombreConfiguracion, tiempoDifEventos, posicionPrecipitacion):
-		print "Adicione la Configuracion"
-		actualizacion = configuracionP.actualizarConfiguracion()
-		return template('configuracion.tpl', configuraciones=actualizacion[0], categorias=actualizacion[1], jornadas=actualizacion[2])
-	else:
-		print "Problema en insercion"
-
-@route('/crearCategoria', method="POST")
-def adicionarCategoria():
-	nombreCategoria = request.forms.nombrecat
-	metricaCategoria = float(request.forms.metricac)
-	if configuracionP.adicionarCategoriabd(nombreCategoria, metricaCategoria):
-		actualizacion = configuracionP.actualizarConfiguracion()
-		return template('configuracion.tpl', configuraciones=actualizacion[0], categorias=actualizacion[1], jornadas=actualizacion[2])
-	else:
-		print "Existieron problemas"
-
-@route('/crearJornada', method="POST")
-def adicionarJornada():
-	nombreJornada = request.forms.nombrejor
-	hInicio = int(request.forms.hinicio)
-	hFin = int(request.forms.hfin)
-	print hInicio, hFin
-	if configuracionP.adicionarJornadabd(nombreJornada, hInicio, hFin):
-		actualizacion = configuracionP.actualizarConfiguracion()
-		return template('configuracion.tpl', configuraciones=actualizacion[0], categorias=actualizacion[1], jornadas=actualizacion[2])
-	else:
-		print "Existieron problemas"
-
-
 @route('/tcarga')
 def vistaAcumulado():
 	vectorEstaciones = dtaestacion.cargarEstaciones()
@@ -389,6 +344,10 @@ def construirReporteResumen():
 		"Revisar el Directorio"
 	else:
 		"Falla"
+
+"""---------------------------------------------------------------------------------------------------------------------------"""
+
+"""ROUTES DEL MODULO DE ESTACIONES"""
 
 @route('/estaciones')
 def estacionesSIPREM():
@@ -463,5 +422,76 @@ def obtenerEstacion():
 		return json.dumps({'efect': '1', 'estacion': {'nombre': str(estacionEncontrada.nombre), 'ubicacion': str(estacionEncontrada.ubicacion), 'fecha': str(estacionEncontrada.fechaoperacion)}})
 	else:
 		return json.dumps({'efect': '0'})
+
+"""--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"""
+
+"""ROUTES DEL MODULO DE CONFIGURACION"""
+
+@route('/tconfiguracion')
+def vistaConfiguracion():
+	setConfiguraciones = configuracionP.obtenerConfiguraciones()
+	setJornadas = configuracionP.obtenerJornadas()
+	setCategorias = configuracionP.obtenerCategorias()
+	return template('configuracion.tpl', configuraciones=setConfiguraciones, categorias=setCategorias, jornadas=setJornadas)
+
+@route('/cargarConfiguracion', method="POST")
+def cargarConfiguracion():
+	data = request.json
+	ideConfiguracion = data['ideconf']
+	if configuracionP.cargarConfiguracion(1, ideConfiguracion):
+		return json.dumps({'efect':"La configuración fue cargada sobre el sistema."})
+	else:
+		return json.dumps({'efect':"La configuracion no fue cargada en el sistema, Por favor intente de nuevo."})
+
+
+@route('/crearConfiguracion', method="POST")
+def crearConfiguracion():
+	data = request.json
+	nombreConfiguracion = data['nombre']
+	posicionPrecipitacion = int(data['posicion'])
+	diferencialTiempo = int(data['diferencial']) / 5
+	if configuracionP.adicionarConfiguracion(1, nombreConfiguracion, diferencialTiempo, posicionPrecipitacion):
+		return json.dumps({'efect':"La configuración fue creada sobre el sistema."})
+	else:
+		return json.dumps({'efect':"La configuración no pudo ser creada en el sistema, Intente de Nuevo."})
+
+@route('/obtenerConfiguracion', method="POST")
+def obtenerConfiguracion():
+	data = request.json
+	ideConfiguracion = int(data['ideconf'])
+	configuracionObtenida = configuracionP.obtenerConfiguracion(ideConfiguracion)
+	if configuracionObtenida != None:
+		return json.dumps({'efect': '1', 'configuracion' : {'nombre': str(configuracionObtenida.nombre), 'posicion': str(configuracionObtenida.ubicacionprecip), 'diferencial': str(configuracionObtenida.tiempodiferencia)}})
+	else:
+		return json.dumps({'efect': '0'})
+
+
+@route('/crearCategoria', method="POST")
+def adicionarCategoria():
+	nombreCategoria = request.forms.nombrecat
+	metricaCategoria = float(request.forms.metricac)
+	if configuracionP.adicionarCategoriabd(nombreCategoria, metricaCategoria):
+		actualizacion = configuracionP.actualizarConfiguracion()
+		return template('configuracion.tpl', configuraciones=actualizacion[0], categorias=actualizacion[1], jornadas=actualizacion[2])
+	else:
+		print "Existieron problemas"
+
+@route('/crearJornada', method="POST")
+def adicionarJornada():
+	nombreJornada = request.forms.nombrejor
+	hInicio = int(request.forms.hinicio)
+	hFin = int(request.forms.hfin)
+	print hInicio, hFin
+	if configuracionP.adicionarJornadabd(nombreJornada, hInicio, hFin):
+		actualizacion = configuracionP.actualizarConfiguracion()
+		return template('configuracion.tpl', configuraciones=actualizacion[0], categorias=actualizacion[1], jornadas=actualizacion[2])
+	else:
+		print "Existieron problemas"
+	
+
+
+
+
+
 
 run(host='localhost', port=8080)

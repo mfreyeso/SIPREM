@@ -218,6 +218,14 @@ class ConfiguracionMother(object):
 			print e
 			return False
 
+	def obtenerConfiguracion(self, idConfiguracionP):
+		try:
+			macaron.macaronage("siprem.db")
+			configuracion = models.Configuracion.get(idConfiguracionP)
+			return configuracion  
+		except Exception, e:
+			raise e
+
 	
 
 	

@@ -163,4 +163,20 @@ class EventoDao(object):
 			return 29
 		else:
 			return 28
-		
+
+	def validarEventos(self, eventosP, estacionId):
+		eventosValidos = []
+		try:
+			macaron.macaronage("siprem.db")
+			estacion = models.Estacion.get(estacionId)
+			for evento in eventosP:
+				fecha = evento.entregarFecha() 
+				horaInicio = evento.entregarHoraInicio()
+				horaFin = evento.entregarHoraFin()
+				eventoQ = estacion.eventos.select("fecha = ? and horainicio = ? and horafin = ?", [str(fecha), str(horaInicio), str(horaFin)])
+				if eventoQ.count() == 0:
+					eventosValidos.append(evento)
+			return eventosValidos
+		except Exception, e:
+			print e
+			return None

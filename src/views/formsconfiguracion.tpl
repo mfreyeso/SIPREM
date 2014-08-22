@@ -2,35 +2,168 @@
    <li class="active">
       <a href="#creatc" data-toggle="tab" class="btn btn-success">Añadir Configuración</a></li>
    <li><a href="#editc" data-toggle="tab" class="btn btn-success">Editar Configuración</a></li>
-   <li><a href="#delc" data-toggle="tab" class="btn btn-success">Eliminar Configuración</a></li>
+   <li><a href="#actc" data-toggle="tab" class="btn btn-success">Activar Configuración</a></li>
    
 </ul>
 <div id="myTabContent" class="tab-content">
    <div class="tab-pane fade in active" id="creatc">
-     <form role="form" style="padding:0.5cm" action="/crearconfiguracion" method="POST">
-            <div class="form-group" style="padding-right:7cm">
+      <div class="col-md-6">
+         <form role="form" style="padding:0.5cm" action="/crearconfiguracion" method="POST">
+            <div class="form-group" style="padding-right:2cm">
                <label for="nombre">Nombre Configuración</label>
-               <input type="text" class="form-control" id="nombreC" name="nombreC" 
+               <input type="text" class="form-control" id="cnombrec" name="cnombrec" 
                   placeholder="Ejemplo: Configuracion Dos">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="padding-right:2cm">
                <label for="tiempo">Diferencial de Tiempo Precipitación (min.)</label>
-               <input class="form-control" type="number" id="dfprec" name="dfprec" min="5">
+               <input class="form-control" type="number" id="cdfprec" name="cdfprec" min="5">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="padding-right:2cm">
                <label for="tiempo">Posición Precipitación (Archivo Plano)</label>
-               <input class="form-control" type="number" id="psprec" name="psprec" min="0">
-            </div>
-            <div class="form-group">
-               <button type="submit" class="btn btn-success">Crear</button>
-            </div>           
-         </form>
-      <p></p><br>
+               <input class="form-control" type="number" id="cpsprec" name="cpsprec" min="0">
+            </div>                     
+         </form>         
+      </div>
+      <div class="col-md-6">
+         <div class="form-group" align="center" style="padding:2.5cm" align="center">
+            <!--<button type="button" id="btncrearco" class="btn btn-success btn-lg">Crear</button>-->
+            <button id="btncrearconfiguracion" class="btn btn-success btn-lg">Crear</button>
+         </div>   
+      </div>
    </div>
+
    <div class="tab-pane fade" id="editc">
-      <p></p><br>
+      <div class="col-md-6">
+
+         <div class="form-group" style="padding-top:1cm">
+            <select name="editconfiguracion" id="editconfiguracion" class="form-control">
+               %for configuracion in configuraciones:
+               <option value="{{configuracion.id}}">{{configuracion.nombre}}</option>
+               %end
+            </select>            
+         </div>
+
+         <div class="form-group" style="padding-top:0.5cm">
+            <button type="button" id="btncargarconfiguracion" class="btn btn-success">Cargar</button>
+         </div>
+
+         <div id="formeditconf" style="display:none">
+            <form role="form">
+               <div class="form-group" style="padding-right:1cm">
+                  <label for="nombre">Nombre Configuración</label>
+                  <input type="text" class="form-control" id="enombrec" name="enombrec" 
+                     placeholder="Ejemplo: Configuracion Dos">
+               </div>
+               <div class="form-group" style="padding-right:1cm">
+                  <label for="tiempo">Diferencial de Tiempo Precipitación (min.)</label>
+                  <input class="form-control" type="number" id="edfprec" name="edfprec" min="5">
+               </div>
+               <div class="form-group" style="padding-right:1cm">
+                  <label for="tiempo">Posición Precipitación (Archivo Plano)</label>
+                  <input class="form-control" type="number" id="epsprec" name="epsprec" min="0">
+               </div>                     
+            </form>
+         </div>         
+      </div>
+      <div class="col-md-6">
+         <div class="row" style="padding:1cm">
+            <h2>Nosepo1</h2>
+         </div>
+
+         <div class="row" style="padding:1cm">
+            <h2>NosePo2</h2>
+         </div>
+                  
+      </div>
    </div>
-   <div class="tab-pane fade" id="delc">
-      <p></p><br>
+   <div class="tab-pane fade" id="actc">
+      <div class="col-md-6">
+         <div class="form-group" style="padding:1cm">
+            <select name="actconfiguracion" id="actconfiguracion" class="form-control">
+               %for configuracion in configuraciones:
+               <option value="{{configuracion.id}}">{{configuracion.nombre}}</option>
+               %end
+            </select>            
+         </div>
+         
+      </div>
+      <div class="col-md-6">
+         <div class="form-group" style="padding: 1cm" align="center">
+            <button class="btn btn-success" id="btnactconfiguracion">
+               Activar Configuración
+            </button>            
+         </div>
+      </div>      
    </div>   
 </div>
+
+<script>
+   $("#btnactconfiguracion").click(function(){
+      var configuracion = $("#actconfiguracion").val();
+      var post_data = {'ideconf': configuracion};
+      $.ajax
+      ({
+         type: 'POST',
+         url : 'cargarConfiguracion',
+         data: JSON.stringify(post_data),
+         contentType: "application/json; charset=utf-8",
+         dataType: 'json',
+         success: function(data){
+            $.each(data, function(index,  value){
+               alert(value);
+               $(location).attr('href', '/tconfiguracion')
+            });
+         }
+      });
+   });
+
+   $("#btncrearconfiguracion").click(function(){
+      var nombreConfiguracion = $("#cnombrec").val();
+      var posPrecipitacion = $("#cpsprec").val();
+      var dfPrecipitacion = $("#cdfprec").val();
+      var post_data = {'nombre': nombreConfiguracion, 'posicion': posPrecipitacion, 'diferencial': dfPrecipitacion};
+      $.ajax
+      ({
+         type : 'POST',
+         url : 'crearConfiguracion',
+         data : JSON.stringify(post_data),
+         contentType : "application/json; charset=utf-8",
+         dataType : 'json',
+         success :  function(data){
+            $.each(data, function(index, value){
+               alert(value);
+            });
+            $(location).attr('href', '/tconfiguracion');
+         }
+      });
+   });
+
+   $("#btncargarconfiguracion").click(function(){
+      var configuracion = $("#editconfiguracion").val();
+      var post_data = {'ideconf': configuracion};
+      $.ajax
+      ({
+         type : 'POST',
+         url : 'obtenerConfiguracion',
+         data : JSON.stringify(post_data),
+         contentType : "application/json; charset=utf-8",
+         dataType : 'json',
+         success: function(data){
+          if(parseInt(data['efect']) == 1){
+            var configuracionObtenida = data['configuracion'];
+            var nombreConfiguracion = configuracionObtenida['nombre'];
+            var posicion = configuracionObtenida['posicion'];
+            var diferencial = configuracionObtenida['diferencial'];
+            $("#enombrec").attr("placeholder", nombreConfiguracion);
+            $("#epsprec").attr("value", posicion);
+            $("#edfprec").attr("value", diferencial);
+            $("#formeditconf").show();
+          }
+          else{
+            alert("La configuracion no pudo ser cargada en el sistema, Intente de Nuevo.");
+          }
+         }
+      });
+   }); 
+</script>
+

@@ -35,8 +35,7 @@
 					    		<td align="center">{{configuracion.nombre}}</td>
 					    		<td align="center">{{configuracion.tiempodiferencia}}</td>
 					    		<td align="center">{{configuracion.ubicacionprecip}}</td>
-					    		<td align="center"><form action="/ajustarConfiguracion/{{configuracion.pk}}"><input  type="submit" value="Utilizar" class="btn btn-success btn-sm"/></form>
-	                			</tr>
+					    		</tr>
 	                		%end
 	                	</table>
 					</div>				
@@ -46,10 +45,8 @@
 					<div class="panel-heading">
 						<h4><b>Administrar Configuraciones</b></h4>
 					</div>
-
-					<p></p><br>
-
-					<div id="admconfiguraciones">
+					<br>
+					<div id="admconfiguraciones" class="panel-body">
 						%include('formsconfiguracion.tpl')
 					</div>				
 				</div>				

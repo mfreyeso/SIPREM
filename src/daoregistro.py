@@ -117,6 +117,22 @@ class RegistroDao(object):
 		else:
 			return 28
 
+	def validarRegistros(self, kernelRegistrosP, estacionId):
+		registrosValidos = []
+		try:
+			macaron.macaronage("siprem.db")
+			estacion = models.Estacion.get(estacionId)
+			for registro in kernelRegistrosP:
+				if registro.entregarPrecipitacion() != 0 and registro.entregarPrecipitacion() != "-":
+					fecha = registro.entregarFecha()
+					hora = registro.entregarHora()
+					registroQ = estacion.estacionreg.select("fecha = ? and hora =?", [str(fecha), str(hora)])
+					if registroQ.count() == 0:
+						registrosValidos.append(registro)
+			return registrosValidos
+		except Exception, e:
+			print e
+			return None
 
 
 
