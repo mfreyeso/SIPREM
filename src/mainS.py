@@ -19,7 +19,6 @@ import daoestacion as des
 
 import macaron
 
-
 #Controlador de MacaronPlugin
 install(macaron.MacaronPlugin("siprem.db"))
 

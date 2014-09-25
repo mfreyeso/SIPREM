@@ -380,7 +380,7 @@ class resumen(object):
 	def maximaIntensidadMaxima(self, coleccionEventosP):
 		imaxima = 0
 		for evento in coleccionEventosP:
-			if evento.entregarDuracion() > imaxima:
+			if evento.entregarIntensidadMaxima() > imaxima:
 				imaxima = evento.entregarIntensidadMaxima()
 		return imaxima
 
