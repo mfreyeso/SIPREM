@@ -33,7 +33,7 @@
 	  			<li><a class="dropdown-toggle" data-toggle="dropdown">Indicador A25<span class="caret"></span></a>
 		          <ul class="dropdown-menu">
 		          	<li><a href="#">Configuración de Indicador</a></li>
-		            <li><a href="#">Utilizar Indicador</a></li>
+		            <li><a href="/tsindicador">Utilizar Indicador</a></li>
 		          </ul>
 		        </li>
 	  			<li><a href="/tresumen">Representaciones Graficas</a></li>

@@ -11,6 +11,7 @@ import categoria as cat
 import jornada as jor
 import mother as mot
 import configuracion
+import indicador as indx
 
 #Se importan las clases de acceso a datos
 import daoevento as dtev
@@ -39,6 +40,8 @@ dtaestacion = des.EstacionDao()
 
 #Objeto Acumulador
 objAcumulador = acu.acumulado()
+#Objeto Indicador
+objIndicador = indx.indicadorA()
 
 @route('/')
 def indexApp():
@@ -62,7 +65,6 @@ def loadFile():
 		listRegistros = estructuraMain.entregarEstructuraKernel()
 		registrosValidos = dtaregistro.validarRegistros(listRegistros, estacionSeleccionada)
 		if len(registrosValidos) != 0:
-		#if registrosValidos != None:
 			dtaregistro.almacenarRegistros(registrosValidos, estacionSeleccionada)
 			eventosValidos = dtaevento.validarEventos(listEventos, estacionSeleccionada)
 			if eventosValidos != None:
@@ -185,7 +187,6 @@ def prepareAcumulate():
 		semestreSeleccionado = int(request.forms.semestre)
 		cadenaParametrizadaP = objAcumulador.entregarSemestre(semestreSeleccionado -1)
 		resultadoP = objAcumulador.acumuladoParametrizado(seleccion, 0, 0, 0, semestreSeleccionado, 0)
-
 	else:
 		opSelec = "Trimestral"
 		trimestreSeleccionado = int(request.forms.trimestre)
@@ -194,71 +195,6 @@ def prepareAcumulate():
 	return template('resacumulado.tpl', resultado=resultadoP, opseleccion=opSelec, cadenaParametrizada=cadenaParametrizadaP)
 
 
-@route('/buscarAcumulado', method='POST')
-def busquedaAcumulado():
-	estacionSeleccionada = int(request.forms.estacionselect)
-	opcionSeleccionada = int(request.forms.opcionselect)
-	if opcionSeleccionada ==1:
-		parametro = str(request.forms.fecha)
-		cadenaParametrizadaP = "Diario " + parametro
-	elif opcionSeleccionada == 2:
-		parametro = str(request.forms.mes)
-		deriv = parametro.split("-")
-		cadenaParametrizadaP = objAcumulador.entregarMes(int(deriv[1])) + " " +deriv[0]
-	elif opcionSeleccionada == 3:
-		parametro = str(request.forms.ano)
-		cadenaParametrizadaP = "Año " + parametro
-	elif opcionSeleccionada == 4:
-		parametro = [int(request.forms.semestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Semestre " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
-	elif opcionSeleccionada == 5:
-		#Trimestre Bimodal
-		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
-	elif opcionSeleccionada == 6:
-		#Trimestre Estandar
-		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
-	else:
-		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
-		cadenaParametrizadaP = "Personalizada: " + str(request.forms.fechainicial) + " " + str(request.forms.fechafinal)
-		
-	registrosEncontrados = dtaregistro.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
-	acumuladoObtenido = objAcumulador.calcularAcumuladoMagnitudRegistros(registrosEncontrados)
-	return template('acumuladoObtenido.tpl', acumulado=acumuladoObtenido, cadenaParametrizada=cadenaParametrizadaP)
-
-
-@route('/buscarAcumuladoEventos', method='POST')
-def busquedaAcumulado():
-	estacionSeleccionada = int(request.forms.estacionselect)
-	opcionSeleccionada = int(request.forms.opcionselect)
-	if opcionSeleccionada ==1:
-		parametro = str(request.forms.fecha)
-		cadenaParametrizadaP = "Diario " + parametro
-	elif opcionSeleccionada == 2:
-		parametro = str(request.forms.mes)
-		deriv = parametro.split("-")
-		cadenaParametrizadaP = objAcumulador.entregarMes(int(deriv[1])) + " " +deriv[0]
-	elif opcionSeleccionada == 3:
-		parametro = str(request.forms.ano)
-		cadenaParametrizadaP = "Año " + parametro
-	elif opcionSeleccionada == 4:
-		parametro = [int(request.forms.semestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Semestre " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
-	elif opcionSeleccionada == 5:
-		#Trimestre Bimodal
-		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
-	elif opcionSeleccionada == 6:
-		#Trimestre Estandar
-		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
-	else:
-		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
-		cadenaParametrizadaP = "Personalizada: Fecha Inicial: " + str(request.forms.fechainicial) + " Fecha Final: " + str(request.forms.fechafinal)
-	eventosEncontrados = dtaevento.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
-	resultadosObtenidos = objAcumulador.calculoGeneralAcumuladoEventos(eventosEncontrados)
-	return template('acumuladoObtenidoEventos.tpl', resultados=resultadosObtenidos, cadenaParametrizada=cadenaParametrizadaP)
 
 @route('/crearResumen', method='POST')
 def crearResumen():
@@ -303,18 +239,7 @@ def crearResumen():
 		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
 		cadenaParametrizadaP = "Personalizada: Fecha Inicial: " + str(request.forms.fechainicial) + " Fecha Final: " + str(request.forms.fechafinal)
 	resumenObtenido = objresumen.generarResumenEventos(opcionSeleccionada, parametro, estacionSeleccionada, vJornadas, vCategorias)
-	print resumenObtenido
 	return template('resultadoresumen.tpl', opcionrs = opcionSeleccionada, resultados = resumenObtenido, cadenaParametrizada = cadenaParametrizadaP, categorias=vCategorias, jornadas = vJornadas, nombreEstacion = nombreEstacionP, diasMes = dias, vAnual = parametro)
-
-@route('/tacumulado')
-def vistaAcumulado():
-	vectorEstaciones = dtaestacion.cargarEstaciones()
-	return template('sacumuladod.tpl', estaciones=vectorEstaciones)
-
-@route('/tacumuladoeventos')
-def vistaAcumulado():
-	vectorEstaciones = dtaestacion.cargarEstaciones()
-	return template('sacumuladodeventos.tpl', estaciones=vectorEstaciones)
 
 @route('/topcresumen')
 def vistaResumenOpciones():
@@ -343,6 +268,116 @@ def construirReporteResumen():
 		"Revisar el Directorio"
 	else:
 		"Falla"
+
+
+"""---------------------------------------------------------------------------------------------------------------------------"""
+
+"""ROUTES DEL MODULO DE INDICADOR AX"""
+
+@route('/tsindicador')
+def vistaIndicador():
+	vectorEstaciones = dtaestacion.cargarEstaciones()
+	return template('sindicadorx.tpl', valorIndicador = 25, estaciones=vectorEstaciones)
+
+@route('/calcularIndicador', method="POST")
+def calcularIndicador():
+	estacionSeleccionada = int(request.forms.estacionselect)
+	opcionSeleccionada = int(request.forms.opcionselect)
+	if opcionSeleccionada ==1:
+		parametro = str(request.forms.ano)
+		cadenaParametrizadaP = "Año " + parametro
+	elif opcionSeleccionada == 2:
+		parametro = [int(request.forms.semestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Semestre " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
+	elif opcionSeleccionada == 3:
+		#Trimestre Bimodal
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
+	else:
+		#Trimestre Estandar
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
+	indicadorObtenido = objIndicador.calcularIndicador(opcionSeleccionada, parametro, estacionSeleccionada)
+	return template('indicadorObtenido.tpl')
+
+
+"""---------------------------------------------------------------------------------------------------------------------------"""
+
+
+"""---------------------------------------------------------------------------------------------------------------------------"""
+
+"""ROUTES DEL MODULO DE ACUMULADOS"""
+
+@route('/tacumulado')
+def vistaAcumulado():
+	vectorEstaciones = dtaestacion.cargarEstaciones()
+	return template('sacumuladod.tpl', estaciones=vectorEstaciones)
+
+@route('/tacumuladoeventos')
+def vistaAcumulado():
+	vectorEstaciones = dtaestacion.cargarEstaciones()
+	return template('sacumuladodeventos.tpl', estaciones=vectorEstaciones)
+
+@route('/buscarAcumulado', method='POST')
+def busquedaAcumulado():
+	estacionSeleccionada = int(request.forms.estacionselect)
+	opcionSeleccionada = int(request.forms.opcionselect)
+	if opcionSeleccionada ==1:
+		parametro = str(request.forms.ano)
+		cadenaParametrizadaP = "Año " + parametro
+	elif opcionSeleccionada == 2:
+		parametro = [int(request.forms.semestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Semestre " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
+	elif opcionSeleccionada == 3:
+		#Trimestre Bimodal
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
+	elif opcionSeleccionada == 4:
+		#Trimestre Estandar
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
+	else:
+		#Multianual
+		parametro = [int(request.forms.anoinicial), int(request.forms.anofinal)]
+		cadenaParametrizadaP = "Personalizada: " + str(request.forms.anoinicial) + " " + str(request.forms.anofinal)
+	acumuladoObtenido = dtaregistro.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
+	return template('acumuladoObtenido.tpl', acumulado=acumuladoObtenido, cadenaParametrizada=cadenaParametrizadaP, opcion=opcionSeleccionada, periodos = parametro)
+
+
+@route('/buscarAcumuladoEventos', method='POST')
+def busquedaAcumulado():
+	estacionSeleccionada = int(request.forms.estacionselect)
+	opcionSeleccionada = int(request.forms.opcionselect)
+	if opcionSeleccionada ==1:
+		parametro = str(request.forms.fecha)
+		cadenaParametrizadaP = "Diario " + parametro
+	elif opcionSeleccionada == 2:
+		parametro = str(request.forms.mes)
+		deriv = parametro.split("-")
+		cadenaParametrizadaP = objAcumulador.entregarMes(int(deriv[1])) + " " +deriv[0]
+	elif opcionSeleccionada == 3:
+		parametro = str(request.forms.ano)
+		cadenaParametrizadaP = "Año " + parametro
+	elif opcionSeleccionada == 4:
+		parametro = [int(request.forms.semestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Semestre " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
+	elif opcionSeleccionada == 5:
+		#Trimestre Bimodal
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
+	elif opcionSeleccionada == 6:
+		#Trimestre Estandar
+		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
+		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
+	else:
+		parametro = [str(request.forms.fechainicial), str(request.forms.fechafinal)]
+		cadenaParametrizadaP = "Personalizada: Fecha Inicial: " + str(request.forms.fechainicial) + " Fecha Final: " + str(request.forms.fechafinal)
+	eventosEncontrados = dtaevento.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
+	resultadosObtenidos = objAcumulador.calculoGeneralAcumuladoEventos(eventosEncontrados)
+	return template('acumuladoObtenidoEventos.tpl', resultados=resultadosObtenidos, cadenaParametrizada=cadenaParametrizadaP)
+
+"""-----------------------------------------------------------------------------------------------------------------------------------------------------"""
+
 
 """---------------------------------------------------------------------------------------------------------------------------"""
 

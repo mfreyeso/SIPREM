@@ -8,11 +8,11 @@
 	
 	<div class="row">
 		<div class="col-xs-12 col-md-8">
-			<h3>Acumulados de Registros</h3><br>
+			<h3>Indicador A{{valorIndicador}}</h3><br>
 			
-			<h4>SIPREM es capaz de entregarle a usted los acumulados de las precipitaciones según su necesidad, seleccione el tipo de acumulado que desea conocer y llene los datos necesarios para poder realizar su solicitud.</h4><br>
+			<h4>SIPREM.</h4><br>
 
-			<form role="form" action="/buscarAcumulado" method="post" id="formacuregistros">
+			<form role="form" action="/calcularIndicador" method="post" id="formindicador">
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
@@ -25,13 +25,12 @@
 						</div>
 
 						<div class="form-group">
-		                    <label for="tipoacumulado">Tipo de Acumulado</label>
+		                    <label for="tipoacumulado">Periodo de Tiempo</label>
 			                <select class="form-control" id="opcionselect" name="opcionselect">
 			                  <option value="1">Diario - Anual</option>
 			                  <option value="2">Semestral</option>
 			                  <option value="3">Trimestral Bimodal</option>
 			                  <option value="4">Trimestral Estandar</option>
-			                  <option value="5">Multianual</option>
 			                </select>
 			            </div>
 	            		<button type="button" class="btn btn-primary" valign="middle" id="butT">Preparar</button>
@@ -105,18 +104,7 @@
 							                	</div><br>";
 								            $("#divDinamico").empty();
 							                $("#divDinamico").append($(inputsDi));
-							    			break;
-
-							    		case 5:
-							    			var inputsDi = "<div class='form-group'>\
-							    				<label for='tipoacumulado'>Año Inicial</label>\
-							    				<input class='form-control' type='number' name='anoinicial' id='anoinicial' value='2002' min='2002'/><br>\
-							    				<label for='tipoacumulado'>Año Final</label>\
-							    				<input class='form-control' type='number' name='anofinal' value='2002' min='2002'/>\
-							    				</div><br>";
-							    			$("#divDinamico").empty();
-							    			$("#divDinamico").append($(inputsDi));
-							    			break;
+							    			break;							    		
 									}});
 							</script>
 						</div>

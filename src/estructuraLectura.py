@@ -94,43 +94,44 @@ class estructuraLectura(object):
 		reader = csv.reader(archivoDatosP, dialect=csv.excel_tab)
 		banderaCabecera = 0
 		precipitacionUbicacion = self.entregarPosicionPrecipitacion() - 1
+
 		for registro in reader:
 			if banderaCabecera == 0:
-				cabecera = registro
-				self.modificarEtiquetaVariables(cabecera)
-				banderaCabecera = 1
+				if registro[0].split()[0].lower() == "fecha":
+					cabecera = registro
+					self.modificarEtiquetaVariables(cabecera)
+					banderaCabecera = 1
 			else:
+				if (not self.validarContenido(registro[2]))  and (not self.validarContenido(registro[3])):
+					fechaFormateada = registro[0].split("-")
+					horaFormateada = registro[1].split(":")
+					try:
+						precipitacion = float(registro[precipitacionUbicacion])
+					except Exception:
+						precipitacion = "-"			
 
-				fechaFormateada = registro[0].split("-")
-				horaFormateada = registro[1].split(":")
-				try:
-					precipitacion = float(registro[precipitacionUbicacion])
-				except Exception:
-					precipitacion = "-"				
+					dia = int(fechaFormateada[2])
+					mes = int(fechaFormateada[1])
+					ano = int(fechaFormateada[0])
+					hora = int(horaFormateada[0])
+					minuto = int(horaFormateada[1])
 
-				dia = int(fechaFormateada[2])
-				mes = int(fechaFormateada[1])
-				ano = int(fechaFormateada[0])
-				hora = int(horaFormateada[0])
-				minuto = int(horaFormateada[1])
+					fecha = datetime.date(ano, mes, dia)
+					hora = datetime.time(hora, minuto, 0)
 
-				fecha = datetime.date(ano, mes, dia)
-				hora = datetime.time(hora, minuto, 0)
-
-				nuevoRegistro = rg.registro(fecha, hora, precipitacion)
-				self.entregarEstructuraKernel().append(nuevoRegistro)
+					nuevoRegistro = rg.registro(fecha, hora, precipitacion)
+					self.entregarEstructuraKernel().append(nuevoRegistro)
 		respuesta =True
-		return respuesta
+		return respuesta	
 
 
 	def validarContenido(self, contenidoP):
-		listaContenidosInvalidos = ["-", " "]
+		listaContenidosInvalidos = ["-", " ", "*"]
 		if contenidoP in listaContenidosInvalidos:
 			return True
 		else:
 			return False
-
-
+			
 	def identificadorEventos(self):
 		unidadDiferencia = (self.entregarTiempoDifEventos() / 5) -1
 		kernelRegistros = self.entregarEstructuraKernel()
@@ -140,10 +141,10 @@ class estructuraLectura(object):
 			posFinal = 0
 			posFinalTemp = 0
 		
-			if kernelRegistros[i].entregarPrecipitacion() != 0.0 and (not self.validarContenido(kernelRegistros[i].entregarPrecipitacion())):
+			if kernelRegistros[i].entregarPrecipitacion() > 0.00 and (not self.validarContenido(kernelRegistros[i].entregarPrecipitacion())):
 				begin = i
 				for j in range(begin, len(kernelRegistros)):
-					if kernelRegistros[j].entregarPrecipitacion() != 0.0 and (not self.validarContenido(kernelRegistros[i].entregarPrecipitacion())):
+					if kernelRegistros[j].entregarPrecipitacion() > 0.00 and (not self.validarContenido(kernelRegistros[i].entregarPrecipitacion())):
 						cDiferencia = 0
 						posFinalTemp = j
 					else:
@@ -153,8 +154,7 @@ class estructuraLectura(object):
 							i=j
 							break
 						else:
-							cDiferencia+=1
-				
+							cDiferencia+=1				
 			else:
 				i+=1
 				
@@ -167,14 +167,21 @@ class estructuraLectura(object):
 		numeroRegistros = (posFinalP - posInicialP) + 1
 		vectorMagnitudes = []
 		magnitudEvento = 0
-		maximaMagnitud = 0
-		
+		maximaMagnitud = 0		
+		posicionMaximo = 0
+
 		for i in range(posInicialP, (posFinalP + 1)):
-			vectorMagnitudes.append(registrosKernel[i].entregarPrecipitacion())
-			if vectorMagnitudes[len(vectorMagnitudes) - 1] > maximaMagnitud:
-				maximaMagnitud = registrosKernel[i].entregarPrecipitacion()
-			magnitudEvento+=registrosKernel[i].entregarPrecipitacion()
-			
+			if self.validarContenido(registrosKernel[i].entregarPrecipitacion()):
+				vectorMagnitudes.append(0)
+			else:
+				vectorMagnitudes.append(registrosKernel[i].entregarPrecipitacion())
+			try:
+				if vectorMagnitudes[len(vectorMagnitudes) - 1] > maximaMagnitud:
+					maximaMagnitud = registrosKernel[i].entregarPrecipitacion()
+					posicionMaximo = i
+				magnitudEvento += registrosKernel[i].entregarPrecipitacion()
+			except TypeError:
+				magnitudEvento += 0	
 
 		registroInicioEvento = registrosKernel[posInicialP]
 		registroFinEvento = registrosKernel[posFinalP + 1]
@@ -187,7 +194,11 @@ class estructuraLectura(object):
 
 		duracionEvento = float(numeroRegistros * 5)
 		intensidadMedia = round(magnitudEvento /(duracionEvento/60), 1)
-		intensidadMaxima = maximaMagnitud * 12
+
+		if self.validarContenido(registrosKernel[posicionMaximo-1].entregarPrecipitacion()):
+			intensidadMaxima = "*"		
+		else:
+			intensidadMaxima = maximaMagnitud * 12
 
 		"""Definiendo categoria y jornada para el evento"""
 
@@ -201,14 +212,15 @@ class estructuraLectura(object):
 			finEvento = str(registroFinEvento.entregarFecha()) +" "+ str(registroFinEvento.entregarHora())
 			observaciones = parametroObservacion + finEvento
 
+		"""Caso : Intensidad Maxima no determinada"""
+		if self.validarContenido(intensidadMaxima):
+			observaciones = observaciones + "La magnitud del evento es incompleta para determinar la intensidad maxima."
+		
 		#Creando instancia de un nuevo evento
-
 		nuevoEvento = evento.evento(fechaEvento, horaInicioEvento, horaFinEvento, magnitudEvento, duracionEvento, intensidadMedia, intensidadMaxima, categoriaEvento, jornadaEvento, observaciones, vectorMagnitudes)
 		nuevoEvento.calcularTiempoNeto()
 		self.adicionarEventoColeccion(nuevoEvento)
-		respuesta = True
-		#return respuesta
-
+				
 	def adicionarEventoColeccion(self, eventoP):
 		self.entregarColeccionEventos().append(eventoP)
 

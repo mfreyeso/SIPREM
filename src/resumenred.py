@@ -33,7 +33,11 @@ class resumen(object):
 					nombreCategoria = categoria.entregarEtiqueta()
 					dias = ["-"]
 					for i in range(1, (self.diasMes(parametrosP) + 1)):
-						eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ? and strftime('%d', fecha) = ? and tipoprec = ?", [parametrosP, str(i), nombreCategoria])
+						if i < 10:
+							dia =  "0" + str(i)
+						else:
+							dia = str(i)
+						eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ? and strftime('%d', fecha) = ? and tipoprec = ?", [parametrosP, dia, nombreCategoria])
 						dias.append(eventosDao.count())
 					resultados.append(dias)
 				return resultados
@@ -151,7 +155,11 @@ class resumen(object):
 					nombreJornada = jornada.entregarEtiquetaJornada()
 					dias = ["-"]
 					for i in range(1, (self.diasMes(parametrosP) + 1)):
-						eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ? and strftime('%d', fecha) = ? and jorprec = ?", [parametrosP, str(i), nombreJornada])
+						if i < 10:
+							dia = "0" + str(i)
+						else:
+							dia = str(i)
+						eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ? and strftime('%d', fecha) = ? and jorprec = ?", [parametrosP, dia, nombreJornada])
 						dias.append(eventosDao.count())
 					resultados.append(dias)
 				return resultados
@@ -263,7 +271,11 @@ class resumen(object):
 			elif opcionResumenP == 2:
 				dias = ["-"]
 				for i in range(1, (self.diasMes(parametrosP) + 1)):
-					eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ? and strftime('%d', fecha) = ?", [parametrosP, str(i)])
+					if i < 10:
+						dia = "0" + str(i)
+					else:
+						dia = str(i)
+					eventosDao = estacionDaoP.eventos.select("strftime('%Y-%m', fecha) = ? and strftime('%d', fecha) = ?", [parametrosP, dia])
 					dias.append(self.determinarMaximos(eventosDao))
 				resultados = dias
 				return resultados

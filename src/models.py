@@ -92,7 +92,7 @@ class Evento(macaron.Model):
 	magnitud = macaron.FloatField(null=False)
 	duracion = macaron.IntegerField(null=False)
 	intmedia = macaron.FloatField(null=False)
-	intmaxima = macaron.FloatField(null=False)
+	intmaxima = macaron.CharField(null=False)
 	tipoprec = macaron.CharField(max_length=32, null=False)
 	observ = macaron.CharField(max_length=512)
 	jorprec = macaron.CharField(max_length=32, null=False)
