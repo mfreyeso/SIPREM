@@ -5,11 +5,12 @@
 	%include('header.tpl')
 	%include('aside.tpl')
 	
+	
 	<div class="row">
 		<div class="col-xs-12 col-md-8">
 			<h3>Eventos Encontrados</h3>
-    
-	  	     <table class="table table-hover">
+			<br>
+			<table class="table table-hover">
 		        <tr align="center">
 		    	  	<td><strong>Evento</strong></td>
 		            <td><strong>Fecha</strong></td>
@@ -42,13 +43,10 @@
 		          	</tr>
 		          	%end
 	  		 </table>
-			
-
+	  		<button type="button" class="btn btn-danger" id="btnreportevent">Generar Reporte PDF</button>
+		    <button type="button" class="btn btn-success" id="btnresultexcel">Generar Reporte Excel</button>
 		</div>
-		
-	</div>
-		
-
+	</div>		
 </body>
 <!--
 <footer class="bs-docs-footer" role="contentinfo">

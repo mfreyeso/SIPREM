@@ -99,6 +99,7 @@ class ConfiguracionMother(object):
 			print e
 			return response
 
+	#Transformacion de las categorias y jornadas obtenidas como DAO a las clases originales
 	def preparacionFinalConfiguracion(self, categoriasP, jornadasP):
 		for jorn in jornadasP:
 			etiqueta = jorn.nombre

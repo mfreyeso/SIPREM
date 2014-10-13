@@ -12,6 +12,7 @@ import jornada as jor
 import mother as mot
 import configuracion
 import indicador as indx
+import reportePrueba as rpb
 
 #Se importan las clases de acceso a datos
 import daoevento as dtev
@@ -41,7 +42,7 @@ dtaestacion = des.EstacionDao()
 #Objeto Acumulador
 objAcumulador = acu.acumulado()
 #Objeto Indicador
-objIndicador = indx.indicadorA()
+objIndicador = indx.indicadorA(25)
 
 @route('/')
 def indexApp():
@@ -277,10 +278,11 @@ def construirReporteResumen():
 @route('/tsindicador')
 def vistaIndicador():
 	vectorEstaciones = dtaestacion.cargarEstaciones()
-	return template('sindicadorx.tpl', valorIndicador = 25, estaciones=vectorEstaciones)
+	return template('sindicadorx.tpl', valorIndicador =objIndicador.entregarIndicadorParametrizado(), estaciones=vectorEstaciones)
 
 @route('/calcularIndicador', method="POST")
 def calcularIndicador():
+	valIndicadorP = objIndicador.entregarIndicadorParametrizado()
 	estacionSeleccionada = int(request.forms.estacionselect)
 	opcionSeleccionada = int(request.forms.opcionselect)
 	if opcionSeleccionada ==1:
@@ -288,17 +290,31 @@ def calcularIndicador():
 		cadenaParametrizadaP = "Año " + parametro
 	elif opcionSeleccionada == 2:
 		parametro = [int(request.forms.semestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Semestre " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
+		cadenaParametrizadaP = "Semestre: " + objAcumulador.entregarSemestre(parametro[0]) + " " + str(parametro[1])
 	elif opcionSeleccionada == 3:
 		#Trimestre Bimodal
 		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
+		cadenaParametrizadaP = "Trimestre: " + objAcumulador.entregarTrimestre(1, parametro[0]) + " " + str(parametro[1])
 	else:
 		#Trimestre Estandar
 		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
-		cadenaParametrizadaP = "Trimestre " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
+		cadenaParametrizadaP = "Trimestre: " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
 	indicadorObtenido = objIndicador.calcularIndicador(opcionSeleccionada, parametro, estacionSeleccionada)
-	return template('indicadorObtenido.tpl')
+	return template('indicadorObtenido.tpl', indicador = indicadorObtenido, cadenaParametrizada = cadenaParametrizadaP, opcion=opcionSeleccionada, periodos = parametro, valIndicador = valIndicadorP)
+
+@route('/configurarindicador')
+def configurarIndicador():
+	return template('formindicador.tpl', valindicador = objIndicador.entregarIndicadorParametrizado())
+
+@route('/transformarIndicador', method="POST")
+def transformarIndicador():
+	data = request.json
+	valorIndicador = int(data['valindicador'])
+	objIndicador.modificarIndicadorParametrizado(valorIndicador)
+	if valorIndicador == objIndicador.entregarIndicadorParametrizado():
+		return json.dumps({'efect': "El indicador fue modificado con exito."})
+	else:
+		return json.dumps({'efect': "El indicador no fue modificado, intente de nuevo."})
 
 
 """---------------------------------------------------------------------------------------------------------------------------"""
@@ -341,6 +357,8 @@ def busquedaAcumulado():
 		parametro = [int(request.forms.anoinicial), int(request.forms.anofinal)]
 		cadenaParametrizadaP = "Personalizada: " + str(request.forms.anoinicial) + " " + str(request.forms.anofinal)
 	acumuladoObtenido = dtaregistro.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
+	objReporte = rpb.Reporte()
+	objReporte.crearReporte()
 	return template('acumuladoObtenido.tpl', acumulado=acumuladoObtenido, cadenaParametrizada=cadenaParametrizadaP, opcion=opcionSeleccionada, periodos = parametro)
 
 
@@ -467,6 +485,13 @@ def vistaConfiguracion():
 	setJornadas = configuracionP.obtenerJornadas()
 	setCategorias = configuracionP.obtenerCategorias()
 	return template('configuracion.tpl', configuraciones=setConfiguraciones, categorias=setCategorias, jornadas=setJornadas)
+
+@route('/tconfiguracionjc')
+def vistaConfiguracion():
+	setJornadas = configuracionP.obtenerJornadas()
+	setCategorias = configuracionP.obtenerCategorias()
+	return template('configuracionjorncat.tpl', categorias=setCategorias, jornadas=setJornadas)
+
 
 @route('/cargarConfiguracion', method="POST")
 def cargarConfiguracion():
