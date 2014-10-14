@@ -71,11 +71,11 @@ class Acumulado(macaron.Model):
 
 class ConfCategoria(macaron.Model):
 	configuracion = macaron.ManyToOne(Configuracion, related_name="configuracionescf")
-	categoriaC = macaron.ManyToOne(Categoria, related_name="categoriascf")
+	categoria = macaron.ManyToOne(Categoria, related_name="categoriascf")
 
 class ConfJornada(macaron.Model):
 	configuracion = macaron.ManyToOne(Configuracion, related_name="configuracionescj")
-	jornadaC = macaron.ManyToOne(Jornada, related_name="jornadascj")
+	jornada = macaron.ManyToOne(Jornada, related_name="jornadascj")
 
 class AlmacenSerializado(object):
 		"""docstring for AlmacenSerializado"""

@@ -104,14 +104,16 @@ class ConfiguracionMother(object):
 		for jorn in jornadasP:
 			etiqueta = jorn.nombre
 			horaInicio = jorn.horainicio
-			horaFin = jorn.horafin 
-			objJornada = jor.jornada(etiqueta, horaInicio, horaFin)
+			horaFin = jorn.horafin
+			identificacion = jorn.id 
+			objJornada = jor.jornada(etiqueta, horaInicio, horaFin, identificacion)
 			self.entregarJornadas().append(objJornada)
 
 		for catg in categoriasP:
 			etiqueta = catg.etiqueta
 			metrica = catg.metrica
-			objCategoria = cat.categoria(etiqueta, metrica)
+			identificacion = catg.id
+			objCategoria = cat.categoria(etiqueta, metrica, identificacion)
 			self.entregarCategorias().append(objCategoria)
 
 	"""Metodos de manipulacion de datos sobre la Base de Datos"""
@@ -121,7 +123,7 @@ class ConfiguracionMother(object):
 		try:
 			macaron.macaronage("siprem.db")
 			#Se valida que no haya en la bd una jornada con hora de inicio semejante
-			jornadasRelacionadas = models.Jornada.select("hinicio=?", [horaInicioP])
+			jornadasRelacionadas = models.Jornada.select("horainicio=?", [horaInicioP])
 			if jornadasRelacionadas.count() == 0:
 				models.Jornada.create(nombre=etiquetaJornada, horainicio=horaInicioP, horafin=horaFinP)
 				macaron.bake()
@@ -197,27 +199,31 @@ class ConfiguracionMother(object):
 
 	def adicionarCategoriaConfiguracion(self, idCategoriaP, idConfiguracionP):
 		try:
-			macaron.macaronage("siprem.db")
+			response = False
 			models.ConfCategoria.create(
-				idconf=idConfiguracionP,
-				idcategoria=idCategoriaP
+				configuracion_id=idConfiguracionP,
+				categoria_id=idCategoriaP
 				)
-			return True
-		except Exception, e:
+			macaron.bake()
+			response = True
+		except AttributeError, e:
 			print e
-			return False
+			response = True			
+		return response
 
 	def adicionarJornadaEvento(self, idJornadaP, idConfiguracionP):
 		try:
-			macaron.macaronage("siprem.db")
+			response = False
 			models.ConfJornada.create(
-				idconf=idConfiguracionP,
-				idJornada=idJornadaP
+				configuracion_id=idConfiguracionP,
+				jornada_id=idJornadaP
 				)
-			return True
-		except Exception, e:
+			macaron.bake()
+			response = True
+		except AttributeError, e:
 			print e
-			return False
+			response = True 
+		return response
 
 	def obtenerConfiguracion(self, idConfiguracionP):
 		try:
@@ -227,9 +233,101 @@ class ConfiguracionMother(object):
 		except Exception, e:
 			raise e
 
-	
+	def obtenerCategoria(self, idCategoriaP):
+		try:
+			macaron.macaronage("siprem.db")
+			categoriaDao = models.Categoria.get(idCategoriaP)
+			etiqueta = categoriaDao.etiqueta
+			metrica = categoriaDao.metrica
+			identificacion = categoriaDao.id
+			categoriaObtenida = cat.categoria(etiqueta, metrica, identificacion)
+			return categoriaObtenida
+		except Exception, e:
+			print e
 
-	
-			
+	def obtenerJornada(self, idJornadaP):
+		try:
+			macaron.macaronage("siprem.db")
+			jornadaDao = models.Jornada.get(idJornadaP)
+			etiqueta = jornadaDao.nombre
+			horaInicio = jornadaDao.horainicio
+			horaFin = jornadaDao.horafin
+			identificacion = jornadaDao.id 
+			jornadaObtenida = jor.jornada(etiqueta, horaInicio, horaFin, identificacion)
+			return jornadaObtenida
+		except Exception, e:
+			print e
+
+	def editarCategoria(self, idCategoriaP, etiquetaCategoriaP, metricaP):
+		try:
+			macaron.macaronage("siprem.db")
+			categoriaDao = models.Categoria.get(idCategoriaP)
+			categoriaDao.etiqueta = etiquetaCategoriaP
+			categoriaDao.metrica = metricaP
+			categoriaDao.save()
+			return True
+		except Exception, e:
+			print e
+
+	def editarJornada(self, idJornadaP, etiquetaJornadaP, horaInicioP, horaFinP):
+		try:
+			macaron.macaronage("siprem.db")
+			jornadaDao = models.Jornada.get(idJornadaP)
+			jornadaDao.nombre = etiquetaJornadaP
+			jornadaDao.horainicio = horaInicioP
+			jornadaDao.horafin = horaFinP
+			jornadaDao.save()
+			return True
+		except Exception, e:
+			print e
+
+	def eliminarCategoria(self, idCategoriaP):
+		try:
+			macaron.macaronage("siprem.db")
+			categoriaDao = models.Categoria.get(idCategoriaP)
+			categoriaDao.delete()
+			return True
+		except Exception, e:
+			print e
+
+	def eliminarJornada(self, idJornadaP):
+		try:
+			macaron.macaronage("siprem.db")
+			jornadaDao = models.Jornada.get(idJornadaP)
+			jornadaDao.delete()
+			return True
+		except Exception, e:
+			print e
+
+	def obtenerCategoriasExistentes(self):
+		try:
+			categoriasEncontradas = []
+			macaron.macaronage("siprem.db")
+			categoriasExistentes = models.Categoria.all()
+			for categoria in categoriasExistentes:
+				etiqueta = categoria.etiqueta
+				metrica = categoria.metrica
+				identificacion = categoria.id
+				objCategoria = cat.categoria(etiqueta, metrica, identificacion)
+				categoriasEncontradas.append(objCategoria)
+			return categoriasEncontradas
+		except Exception, e:
+			print e
+
+	def obtenerJornadasExistentes(self):
+		try:
+			jornadasEncontradas = []
+			macaron.macaronage("siprem.db")
+			jornadasExistentes = models.Jornada.all()
+			for jornada in jornadasExistentes:
+				etiqueta = jornada.nombre
+				horaInicio = jornada.horainicio
+				horaFin = jornada.horafin
+				identificacion = jornada.id 
+				objJornada = jor.jornada(etiqueta, horaInicio, horaFin, identificacion)
+				jornadasEncontradas.append(objJornada)
+			return jornadasEncontradas
+		except Exception, e:
+			print e		
 
 	

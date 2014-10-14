@@ -64,13 +64,13 @@
 					</div>				
 				</div>
 
-				<div class="panel panel-success">
+				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h4><b>Administrar Categorias y Jornadas</b></h4>
+						<h3>Categorias y Jornadas</h3>
 					</div>
 					<br>
-					<div id="admconfiguraciones" class="panel-body">
-						
+					<div id="admjc" class="panel-body">
+						%include('formsconfiguracionjc.tpl')
 					</div>				
 				</div>				
 			</div>				

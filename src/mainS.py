@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from bottle import *
 import os, inspect, json
 import jsonparsers as jsp
@@ -482,14 +484,14 @@ def obtenerEstacion():
 @route('/tconfiguracion')
 def vistaConfiguracion():
 	setConfiguraciones = configuracionP.obtenerConfiguraciones()
-	setJornadas = configuracionP.obtenerJornadas()
-	setCategorias = configuracionP.obtenerCategorias()
+	setJornadas = configuracionP.obtenerJornadasExistentes()
+	setCategorias = configuracionP.obtenerCategoriasExistentes()
 	return template('configuracion.tpl', configuraciones=setConfiguraciones, categorias=setCategorias, jornadas=setJornadas)
 
 @route('/tconfiguracionjc')
 def vistaConfiguracion():
-	setJornadas = configuracionP.obtenerJornadas()
-	setCategorias = configuracionP.obtenerCategorias()
+	setJornadas = configuracionP.obtenerJornadasExistentes()
+	setCategorias = configuracionP.obtenerCategoriasExistentes()
 	return template('configuracionjorncat.tpl', categorias=setCategorias, jornadas=setJornadas)
 
 
@@ -508,7 +510,7 @@ def crearConfiguracion():
 	data = request.json
 	nombreConfiguracion = data['nombre']
 	posicionPrecipitacion = int(data['posicion'])
-	diferencialTiempo = int(data['diferencial']) / 5
+	diferencialTiempo = int(data['diferencial'])
 	if configuracionP.adicionarConfiguracion(1, nombreConfiguracion, diferencialTiempo, posicionPrecipitacion):
 		return json.dumps({'efect':"La configuración fue creada sobre el sistema."})
 	else:
@@ -524,32 +526,108 @@ def obtenerConfiguracion():
 	else:
 		return json.dumps({'efect': '0'})
 
+@route('/adicionarCategoria', method="POST")
+def adicionarCategoria():
+	data = request.json
+	identificacionCategoria = int(data['idcat'])
+	identificacionConfiguracion = int(data['idconf'])
+	if configuracionP.adicionarCategoriaConfiguracion(identificacionCategoria, identificacionConfiguracion):
+		return json.dumps({'efect':"La categoria fue añadida a la configuración."})
+	else:
+		return json.dumps({'efect':"La categoria no fue añadida, asegurese que la configuración no incluye ya esta categoria."})
+
+@route('/adicionarJornada', method="POST")
+def adicionarJornada():
+	data = request.json
+	identificacionJornada = int(data['idjor'])
+	identificacionConfiguracion = int(data['idconf'])
+	if configuracionP.adicionarJornadaEvento(identificacionJornada, identificacionConfiguracion) == True:
+		return json.dumps({'efect':"La jornada fue añadida a la configuración."})
+	else:
+		return json.dumps({'efect':"La jornada no fue añadida, asegurese que la configuración no incluye ya esta jornada."})
+
+@route('/obtenerCategoria', method="POST")
+def obtenerCategoria():
+	data = request.json
+	idCategoria = int(data['idcat'])
+	categoriaObtenida = configuracionP.obtenerCategoria(idCategoria)
+	if categoriaObtenida != None:
+		return json.dumps({'efect': '1', 'categoria': {'etiqueta': str(categoriaObtenida.entregarEtiqueta()), 'metrica': str(categoriaObtenida.entregarMagnitud())}})
+	else:
+		return json.dumps({'efect': '0'})
+
+@route('/obtenerJornada', method="POST")
+def obtenerJornada():
+	data = request.json
+	idJornada = int(data['idjor'])
+	jornadaObtenida = configuracionP.obtenerJornada(idJornada)
+	if jornadaObtenida != None:
+		return json.dumps({'efect': '1', 'jornada' :{'etiqueta': str(jornadaObtenida.entregarEtiquetaJornada()), 'hinicio': str(jornadaObtenida.entregarHoraInicio()), 'hfin': str(jornadaObtenida.entregarHoraFin())}})
+	else:
+		return json.dumps({'efect': '0'})
 
 @route('/crearCategoria', method="POST")
-def adicionarCategoria():
-	nombreCategoria = request.forms.nombrecat
-	metricaCategoria = float(request.forms.metricac)
-	if configuracionP.adicionarCategoriabd(nombreCategoria, metricaCategoria):
-		actualizacion = configuracionP.actualizarConfiguracion()
-		return template('configuracion.tpl', configuraciones=actualizacion[0], categorias=actualizacion[1], jornadas=actualizacion[2])
+def crearCategoria():
+	data = request.json
+	etiquetaCategoria = str(data['etiqueta'])
+	metricaCategoria = float(data['metrica'])
+	if configuracionP.adicionarCategoriabd(etiquetaCategoria, metricaCategoria):
+		return json.dumps({'efect':"La categoria fue creada en el sistema."})
 	else:
-		print "Existieron problemas"
+		return json.dumps({'efect':"La categoria no pudo ser creada en el sistema, Intente de Nuevo."})
+
 
 @route('/crearJornada', method="POST")
-def adicionarJornada():
-	nombreJornada = request.forms.nombrejor
-	hInicio = int(request.forms.hinicio)
-	hFin = int(request.forms.hfin)
-	print hInicio, hFin
-	if configuracionP.adicionarJornadabd(nombreJornada, hInicio, hFin):
-		actualizacion = configuracionP.actualizarConfiguracion()
-		return template('configuracion.tpl', configuraciones=actualizacion[0], categorias=actualizacion[1], jornadas=actualizacion[2])
+def crearJornada():
+	data = request.json
+	etiquetaJornada = str(data['etiqueta'])
+	horaInicio = int(data['hinicio'])
+	horaFin = int(data['hfin'])
+	if configuracionP.adicionarJornadabd(etiquetaJornada, horaInicio, horaFin):
+		return json.dumps({'efect':"La jornada fue creada en el sistema."})
 	else:
-		print "Existieron problemas"
-	
+		return json.dumps({'efect':"La jornada no pudo ser creada en el sistema, Intente de Nuevo."})
 
+@route('/eliminarCategoria', method="POST")
+def eliminarCategoria():
+	data = request.json
+	idCategoria = int(data['idcat'])
+	if configuracionP.eliminarCategoria(idCategoria):
+		return json.dumps({'efect':"La categoria fue eliminada del sistema."})
+	else:
+		return json.dumps({'efect':"La categoria no fue eliminada del sistema, Intente de Nuevo."})
 
+@route('/eliminarJornada', method="POST")
+def eliminarJornada():
+	data = request.json
+	idJornada = int(data['idjor'])
+	if configuracionP.eliminarJornada(idJornada):
+		return json.dumps({'efect':"La jornada fue eliminada del sistema."})
+	else:
+		return json.dumps({'efect':"La jornada no fue eliminada del sistema, Intente de Nuevo."})
 
+@route('/editarCategoria', method='POST')
+def editarCategoria():
+	data = request.json
+	idCategoria = int(data['idcat'])
+	etiquetaCategoria = str(data['etiqueta'])
+	metricaCategoria = float(data['metrica'])
+	if configuracionP.editarCategoria(idCategoria, etiquetaCategoria, metricaCategoria):
+		return json.dumps({'efect':"La categoria fue modificada con exito."})
+	else:
+		return json.dumps({'efect':"La categoria no fue modificada, Intente de Nuevo."})
+
+@route('/editarJornada', method="POST")
+def editarJornada():
+	data = request.json
+	idJornada = int(data['idjor'])
+	etiquetaJornada = str(data['etiqueta'])
+	horaInicio = int(data['hinicio'])
+	horaFin = int(data['hfin'])
+	if configuracionP.editarJornada(idJornada, etiquetaJornada, horaInicio, horaFin):
+		return json.dumps({'efect':"La jornada fue modificada con exito."})
+	else:
+		return json.dumps({'efect':"La categoria no fue modificada, Intente de Nuevo."})
 
 
 
