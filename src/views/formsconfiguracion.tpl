@@ -46,11 +46,6 @@
             <button type="button" id="btncargarconfiguracion" class="btn btn-success">Cargar</button>
          </div>
 
-         <div id="catjors">
-
-            
-         </div>
-
          <div id="formeditconf" style="display:none">
             <form role="form">
                <div class="form-group" style="padding-right:1cm">
@@ -101,7 +96,11 @@
                   <button type="button" id="btnaddjor" class="btn btn-success">Añadir</button>
                </div>                   
             </form>
-         </div>                  
+         </div>
+         <div class="row" style="padding-top:0.1cm; padding-left:0.2cm; padding-right:0.2cm">
+            <div id="catjors" style="display:none">            
+            </div>
+         </div>                           
       </div>   
    </div>
    <div class="tab-pane fade" id="actc">
@@ -181,11 +180,12 @@
             var nombreConfiguracion = configuracionObtenida['nombre'];
             var posicion = configuracionObtenida['posicion'];
             var diferencial = configuracionObtenida['diferencial'];
-            $("#enombrec").attr("placeholder", nombreConfiguracion);
+            $("#enombrec").attr("value", nombreConfiguracion);
             $("#epsprec").attr("value", posicion);
             $("#edfprec").attr("value", diferencial);
             $("#formeditconf").show();
 
+            var titulo = "<h4>Categorias y Jornadas de la Configuración</h4><br>";
             var tablaJornadasCategoriasInicio = "<table class='table table-hover' margin='auto'>\
                      <tr>\
                         <td align='center'><strong>Categorias</strong></td>\
@@ -201,39 +201,38 @@
 
             var tablaCategoriasFin = "</table></td>";
 
+            var filasCategorias ="";
+            $(data.categorias).each(function(index, value){
+               var categoria = "<tr><td align='center'>"+value['etcategoria']+"</td>\
+               <td align='center'>"+value['metrica']+"</td></tr>";
+               filasCategorias+=categoria;
+            });
+            var tablaCategorias = tablaCategoriasInicio + filasCategorias + tablaCategoriasFin;         
+           
             var tablaJornadasInicio = "<td><table class='table table-hover' margin='auto'>\
                                  <tr>\
                                  <td align='center'><strong>Jornada</strong></td>\
                                  <td align='center'><strong>Hora Inicio</strong></td>\
                                  <td align='center'><strong>Hora Fin</strong></td>\
                                  </tr>";
-
             var tablaJornadasFin = "</table>";
+
+            var filasJornadas ="";
+            $(data.jornadas).each(function(index, value){
+               var jornada = "<tr><td align='center'>"+value['etjornada']+"</td>\
+               <td align='center'>"+value['hinicio']+"</td>\
+               <td align='center'>"+value['hfin']+"</td></tr>";
+               filasJornadas+=jornada;
+            });
+            var tablaJornadas = tablaJornadasInicio + filasJornadas + tablaJornadasFin;
+
             var tablaJornadasCategoriasFin = "</td></tr></table>";
-
-
-                          
-                              %for categoria in categorias:
-                                 <tr>
-                                    <td align='center'>{{categoria.entregarEtiqueta()}}</td>
-                                    <td align='center'>{{categoria.entregarMagnitud()}}</td>             
-                                 </tr>
-                                 %end
-                                                       
-                        
-                              %for jornada in jornadas:
-                                 <tr>
-                                    <td align='center'>{{jornada.entregarEtiquetaJornada()}}</td>
-                                    <td align='center'>{{jornada.entregarHoraInicio()}}</td>
-                                    <td align='center'>{{jornada.entregarHoraFin()}}</td>             
-                                 </tr>
-                                 %end
-                              
-              
-
-            
+            var tablaFinal = titulo + tablaJornadasCategoriasInicio + tablaCategorias + tablaJornadas + tablaJornadasCategoriasFin;
+            $("#catjors").empty();
+            $("#catjors").append(tablaFinal);
+            $("#catjors").show();           
          }
-          else{
+         else{
             alert("La configuracion no pudo ser cargada en el sistema, Intente de Nuevo.");
           }
          }

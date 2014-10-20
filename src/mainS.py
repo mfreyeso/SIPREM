@@ -522,21 +522,25 @@ def obtenerConfiguracion():
 	configuracionObtenida = configuracionP.obtenerConfiguracion(ideConfiguracion)
 	categoriasConfiguracion = configuracionP.obtenerCategoriasConfiguracion(ideConfiguracion)
 	jornadasConfiguracion =  configuracionP.obtenerJornadasConfiguracion(ideConfiguracion)
+	nombreConfiguracion = configuracionObtenida.nombre
+	posicionPrecipitacion = configuracionObtenida.ubicacionprecip
+	diferencialTiempo = configuracionObtenida.tiempodiferencia
 
 	if configuracionObtenida != None and categoriasConfiguracion != None and jornadasConfiguracion != None:
 		resultado = {}
 		coleccionCategorias = []
-		for i in range(0, categoriasConfiguracion.count()):
-			dicategoria = {'etcategoria': str(categoriasConfiguracion[i].etiqueta) , 'metrica': str(categoriasConfiguracion[i].metrica)}
+		for categoria in categoriasConfiguracion:
+			dicategoria = {'etcategoria': str(categoria.etiqueta) , 'metrica': str(categoria.metrica)}
 			coleccionCategorias.append(dicategoria)
 		resultado['categorias'] = coleccionCategorias
 
 		coleccionJornadas = []
-		for i in range(0, jornadasConfiguracion.count()):
-			dicjornada = {'etjornada': str(jornadasConfiguracion[i].nombre)  , 'hinicio': str(jornadasConfiguracion[i].horainicio) , 'hfin': str(jornadasConfiguracion[i].horafin)}
+		for jornada in jornadasConfiguracion:
+			dicjornada = {'etjornada': str(jornada.nombre)  , 'hinicio': str(jornada.horainicio) , 'hfin': str(jornada.horafin)}
 			coleccionJornadas.append(dicjornada)
 		resultado['jornadas'] = coleccionJornadas
 		resultado['efect'] = 1
+		resultado['configuracion'] = {'nombre': str(nombreConfiguracion), 'posicion': str(posicionPrecipitacion), 'diferencial': str(diferencialTiempo)}
 		return json.dumps(resultado)
 	else:
 		return json.dumps({'efect': '0'})
