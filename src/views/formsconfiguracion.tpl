@@ -46,6 +46,11 @@
             <button type="button" id="btncargarconfiguracion" class="btn btn-success">Cargar</button>
          </div>
 
+         <div id="catjors">
+
+            
+         </div>
+
          <div id="formeditconf" style="display:none">
             <form role="form">
                <div class="form-group" style="padding-right:1cm">
@@ -180,7 +185,54 @@
             $("#epsprec").attr("value", posicion);
             $("#edfprec").attr("value", diferencial);
             $("#formeditconf").show();
-          }
+
+            var tablaJornadasCategoriasInicio = "<table class='table table-hover' margin='auto'>\
+                     <tr>\
+                        <td align='center'><strong>Categorias</strong></td>\
+                        <td align='center'><strong>Jornadas</strong></td>\
+                     </tr>\
+                     <tr>\
+                     <td>";
+           var tablaCategoriasInicio =" <table class='table table-hover' margin='auto'>\
+                                 <tr>\
+                                 <td align='center'><strong>Categoria</strong></td>\
+                                 <td align='center'><strong>Metrica</strong></td>\
+                                 </tr>";
+
+            var tablaCategoriasFin = "</table></td>";
+
+            var tablaJornadasInicio = "<td><table class='table table-hover' margin='auto'>\
+                                 <tr>\
+                                 <td align='center'><strong>Jornada</strong></td>\
+                                 <td align='center'><strong>Hora Inicio</strong></td>\
+                                 <td align='center'><strong>Hora Fin</strong></td>\
+                                 </tr>";
+
+            var tablaJornadasFin = "</table>";
+            var tablaJornadasCategoriasFin = "</td></tr></table>";
+
+
+                          
+                              %for categoria in categorias:
+                                 <tr>
+                                    <td align='center'>{{categoria.entregarEtiqueta()}}</td>
+                                    <td align='center'>{{categoria.entregarMagnitud()}}</td>             
+                                 </tr>
+                                 %end
+                                                       
+                        
+                              %for jornada in jornadas:
+                                 <tr>
+                                    <td align='center'>{{jornada.entregarEtiquetaJornada()}}</td>
+                                    <td align='center'>{{jornada.entregarHoraInicio()}}</td>
+                                    <td align='center'>{{jornada.entregarHoraFin()}}</td>             
+                                 </tr>
+                                 %end
+                              
+              
+
+            
+         }
           else{
             alert("La configuracion no pudo ser cargada en el sistema, Intente de Nuevo.");
           }

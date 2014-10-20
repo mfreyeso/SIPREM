@@ -453,7 +453,6 @@ def activarEstacion():
 
 @route('/estacionesDesactivadas', method="GET")
 def estacionesDesactivadas():
-	enconderJSON = jsp.MyEncoder()
 	estacionesDesactivadas = dtaestacion.obtenerEstacionesDesactivadas()
 	if estacionesDesactivadas != None:
 		resultado = {}
@@ -521,8 +520,24 @@ def obtenerConfiguracion():
 	data = request.json
 	ideConfiguracion = int(data['ideconf'])
 	configuracionObtenida = configuracionP.obtenerConfiguracion(ideConfiguracion)
-	if configuracionObtenida != None:
-		return json.dumps({'efect': '1', 'configuracion' : {'nombre': str(configuracionObtenida.nombre), 'posicion': str(configuracionObtenida.ubicacionprecip), 'diferencial': str(configuracionObtenida.tiempodiferencia)}})
+	categoriasConfiguracion = configuracionP.obtenerCategoriasConfiguracion(ideConfiguracion)
+	jornadasConfiguracion =  configuracionP.obtenerJornadasConfiguracion(ideConfiguracion)
+
+	if configuracionObtenida != None and categoriasConfiguracion != None and jornadasConfiguracion != None:
+		resultado = {}
+		coleccionCategorias = []
+		for i in range(0, categoriasConfiguracion.count()):
+			dicategoria = {'etcategoria': str(categoriasConfiguracion[i].etiqueta) , 'metrica': str(categoriasConfiguracion[i].metrica)}
+			coleccionCategorias.append(dicategoria)
+		resultado['categorias'] = coleccionCategorias
+
+		coleccionJornadas = []
+		for i in range(0, jornadasConfiguracion.count()):
+			dicjornada = {'etjornada': str(jornadasConfiguracion[i].nombre)  , 'hinicio': str(jornadasConfiguracion[i].horainicio) , 'hfin': str(jornadasConfiguracion[i].horafin)}
+			coleccionJornadas.append(dicjornada)
+		resultado['jornadas'] = coleccionJornadas
+		resultado['efect'] = 1
+		return json.dumps(resultado)
 	else:
 		return json.dumps({'efect': '0'})
 

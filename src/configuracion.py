@@ -328,6 +328,34 @@ class ConfiguracionMother(object):
 				jornadasEncontradas.append(objJornada)
 			return jornadasEncontradas
 		except Exception, e:
-			print e		
+			print e
+
+	def obtenerCategoriasConfiguracion(self, idConfiguracionP):
+		try:
+			macaron.macaronage("siprem.db")
+			categorias = []
+			confcategorias = models.ConfCategoria.select("configuracion_id=?", [idConfiguracionP])
+			for i, o in enumerate(confcategorias):
+				categoriaOb = models.Categoria.get(o.categoria_id)
+				categorias.append(categoriaOb)
+			categorias.sort()
+		except Exception, e:
+			print e
+		return categorias
+
+	def obtenerJornadasConfiguracion(self, idConfiguracionP):
+		try:
+			macaron.macaronage("siprem.db")
+			jornadas = []
+			confjornadas = models.ConfJornada.select("configuracion_id=?", [idConfiguracionP])
+			for i, o in enumerate(confjornadas):
+				jornadaOb = models.Jornada.get(o.jornada_id)
+				jornadas.append(jornadaOb)
+			jornadas.sort()			
+		except Exception, e:
+			print e
+		return jornadas
+
+
 
 	
