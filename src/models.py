@@ -16,6 +16,8 @@ class Usuario(macaron.Model):
 	email = macaron.CharField(max_length=48, null=False)
 	docidentificacion = macaron.CharField(max_length=18, null=False)
 	tipousuario = macaron.ManyToOne(TipoUsuario, related_name="usuariostp")
+	usuariosistema = macaron.CharField(max_length=32, null=False)
+	clave = macaron.CharField(max_length=32, null=False)
 
 class Configuracion(macaron.Model):
 	tiempodiferencia = macaron.IntegerField()

@@ -46,15 +46,19 @@ objAcumulador = acu.acumulado()
 #Objeto Indicador
 objIndicador = indx.indicadorA(25)
 
+
 @route('/')
 def indexApp():
 	return template('indexCambios.tpl')
-	#return template('index.tpl')
 
 @route('/index')
 def indexAppTwo():
 	return template('indexCambios.tpl')
-	#return template('index.tpl')
+
+@route('/menuinicio')
+def inicio():
+	return template('menuinicio.tpl')
+
 
 @route('/cargarArchivo', method='POST')
 def loadFile():
@@ -648,6 +652,69 @@ def editarJornada():
 	else:
 		return json.dumps({'efect':"La categoria no fue modificada, Intente de Nuevo."})
 
+"""---------------------------------------------------------------------------------------------------------------------------------"""
+
+
+"""---------------------------------------------------------------------------------------------------------------------------------"""
+""".....................................ROUTES DE USUARIOS.........................................................................."""
+
+
+@route('/loginuser', method="POST")
+def loginSIPREM():
+	data = request.json
+	username = str(data['nameuser'])
+	password = str(data['passuser'])
+	if configuracionP.validarUsuario(username, password) != None:
+		usuarioEncontrado = configuracionP.validarUsuario(username, password)
+		configuracionP.modificarUsuarioActivo(usuarioEncontrado)
+		return json.dumps({'efect': "1"})
+	else:
+		return json.dumps({'efect': "0"})
+
+@route('/usuariodetalles')
+def detallesUsuario():
+	usuarioActivo = configuracionP.entregarUsuarioActivo()
+	nombreUsuario = usuarioActivo.nombre
+	primerApellido = usuarioActivo.primerapellido
+	segundoApellido = usuarioActivo.segundoapellido
+	telefono = usuarioActivo.telefono
+	email = usuarioActivo.email
+	docidentificacion = usuarioActivo.docidentificacion
+	rol = configuracionP.obtenerTipoUsuario(usuarioActivo.tipousuario_id)
+	usuariosistema = usuarioActivo.usuariosistema
+	if rol == "Administrador":
+		rolId = 1
+	else:
+		rolId = 0
+	return template('detallesUsuario.tpl', nombre=nombreUsuario, papellido=primerApellido, sapellido=segundoApellido, mail=email, rolusuario=rol,
+	 identificacion=docidentificacion, accuser=usuariosistema, rolid=rolId)
+
+@route('/teditusuario')
+def vistaEditarUsuario():
+	usuarioActivo = configuracionP.entregarUsuarioActivo()
+	nombreUsuario = usuarioActivo.nombre
+	primerApellido = usuarioActivo.primerapellido
+	segundoApellido = usuarioActivo.segundoapellido
+	telefono = usuarioActivo.telefono
+	email = usuarioActivo.email
+	docidentificacion = usuarioActivo.docidentificacion
+	
+	roles = configuracionP.obtenerTipoUsuario(usuarioActivo.tipousuario_id)
+	
+	usuariosistema = usuarioActivo.usuariosistema
+	claveaccess = usuarioActivo.clave
+
+	return template('editarUsuario.tpl', nombre=nombreUsuario, papellido=primerApellido, sapellido=segundoApellido, mail=email, rolusuario=roles,
+	 identificacion=docidentificacion, accuser=usuariosistema, rolesdisponibles=roles, accpassword=claveaccess)
+
+
+
+
+
+
+
+
+"""---------------------------------------------------------------------------------------------------------------------------------"""
 
 
 run(host='localhost', port=8080)

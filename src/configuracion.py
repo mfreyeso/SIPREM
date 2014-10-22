@@ -28,6 +28,9 @@ class ConfiguracionMother(object):
 	def entregarUbicacionVarP(self):
 		return self.ubicacionVarPrecipitacion
 
+	def entregarUsuarioActivo(self):
+		return self.usuarioActivo
+
 	def modificarJornadas(self, jornadasP):
 		self.listaJornadas = jornadasP
 
@@ -39,6 +42,9 @@ class ConfiguracionMother(object):
 
 	def modificarUbicacionVarP(self, posicionP):
 		self.ubicacionVarPrecipitacion = posicionP
+
+	def modificarUsuarioActivo(self, usuarioP):
+		self.usuarioActivo = usuarioP
 
 	"""Entrega las configuraciones actualizadas"""
 	def actualizarConfiguracion(self):
@@ -69,8 +75,11 @@ class ConfiguracionMother(object):
 			jornadas =[]
 			categorias =[]
 
-			usuarioActivo = models.Usuario.get(identificacionP)
-			configuracionAsociada = usuarioActivo.configuracionesu.select("predt=?", [1])[0]
+			#usuarioActivo = models.Usuario.get(identificacionP)
+			#configuracionAsociada = usuarioActivo.configuracionesu.select("predt=?", [1])[0]
+			#pkConfiguracion = configuracionAsociada.pk
+			
+			configuracionAsociada = models.Configuracion.get(identificacionP)
 			pkConfiguracion = configuracionAsociada.pk
 
 			setConfJornadas = models.ConfJornada.select("configuracion_id=?", [pkConfiguracion])
@@ -169,14 +178,40 @@ class ConfiguracionMother(object):
 				return response
 		except Exception, e:
 			print e
-			return False	
+			return response	
 	
 	def buscarUsuario(self, identificacionP):
-		busquedaUsuario = models.Usuario.select("name=?", [identificacionP])
-		if busquedaUsuario.count():
-			usuario = busquedaUsuario[0]
-			return usuario
-		else:
+		try:
+			macaron.macaronage("siprem.db")
+			usuario = models.Usuario.get(identificacionP)
+			if usuario != None:
+				return usuario
+			else:
+				return None
+		except Exception, e:
+			print e
+			return None
+
+	def validarUsuario(self, usernameP, passwordP):
+		try:
+			macaron.macaronage("siprem.db")
+			busquedaUsuario = models.Usuario.select(" usuariosistema=? and clave=? ", [usernameP,  passwordP])
+			if busquedaUsuario.count() > 0:
+				usuarioEncontrado = busquedaUsuario[0]
+				return usuarioEncontrado
+			else:
+				return None
+		except Exception, e:
+			print e
+			return None
+
+	def obtenerTipoUsuario(self, idTipoUsuario):
+		try:
+			macaron.macaronage("siprem.db")
+			tipoUsuario = models.TipoUsuario.get(idTipoUsuario)
+			return tipoUsuario.tipo
+		except Exception, e:
+			print e
 			return None
 
 	def adicionarConfiguracion(self, idUsuarioP, nombreConfP, tDiferenciaP, ubicacionPrecipitacionP):

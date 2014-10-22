@@ -2,10 +2,11 @@
 		<div class="col-xs-4 col-md-2">
 			<ul class="nav nav-pills nav-stacked" id="navaside">
 	 			<li><a href="/menuinicio">Inicio</a></li>
-	  			<li><a href="/usuariodetalles" class="dropdown-toggle" data-toggle="dropdown">Perfil<span class="caret"></span></a>
+	  			<li><a href="/usuario">Perfil</a>
 					<ul class="dropdown-menu">
-			          	<li><a href="/usuariodetalles">Detalles</a></li>
-			          	<li><a href="/editusuario">Editar Información</a></li>
+		          	<li><a href="/usuario">Detalles</a></li>
+		          	<li><a href="/editusuario">Editar Informacion</a></li>
+		          	<li><a href="/adminusuarios">Administrar Usuarios</a></li>
 		          </ul>
 	  			</li>
 	  			<li id="estaciones"><a href="/estaciones">Estaciones</a></li>

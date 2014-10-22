@@ -7,14 +7,19 @@
 
 		    <!-- Navegador Izquierdo-->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav">		        	        
-		      </ul>
-		     
+		      <ul class="nav navbar-nav">		       	        
+		      </ul>		     
 			  <!-- Navegador Derecho Ingreso Usuarios -->		     
 			    <ul class="nav navbar-nav navbar-right">
 			      <form class="navbar-form navbar-left" role="search">
-			       	<h5><a href="/usuario"><strong>Usuario</strong></a></h5>
-			      </form>			      
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Usuario" name="nombreusuario" id="nameuser">
+			        </div>
+			        <div class="form-group">
+			        <input type="password" class="form-control" placeholder="Contraseña" name="clave" id="passuser">
+			        </div>
+			        <button type="button" class="btn btn-primary" id="btnlogin">Ingresar</button>
+			      </form>
 			      <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>IDEA</b></a>
 		          <ul class="dropdown-menu">
@@ -26,8 +31,6 @@
 		          <li class="dropdown">
 			        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Opciones<b class="caret"></b></a>
 			        <ul class="dropdown-menu">
-				        <li><a href="#">Cerrar Sesion</a></li>
-				        <li class="divider"></li>
 				        <li><a href="#">Ayuda</a></li>
 			        </ul>
 			     </li>
