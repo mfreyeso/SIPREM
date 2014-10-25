@@ -1,13 +1,17 @@
+import os
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
 class Reporte(object):
 	"""docstring for Reporte"""
-	def __init__(self):
+	def __init__(self, nombreArchivoP, dirArchivoP):
 		super(Reporte, self).__init__()
+		self.nombreArchivo = nombreArchivoP
+		self.dirArchivo = dirArchivoP
+		self.tipoArchivo = ".pdf"
 
 	def crearReporte(self):
-		c = canvas.Canvas("canvas_draw.pdf", pagesize=letter)
+		c = canvas.Canvas(os.path.join(self.dirArchivo, self.nombreArchivo + self.tipoArchivo), pagesize=letter)
 		c.setFont("Helvetica", 18)
 		c.line(50,50,50,350)
 		c.line(50,50,350,50)

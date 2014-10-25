@@ -61,6 +61,11 @@
 			                </select>
 			           	</div>           				
            			</div>
+           		</div>
+           		<div class="row">
+           			<div class="form-group" align="center">
+			            <input name="butBuscar" type="submit" value="Buscar Eventos" class="btn btn-primary">
+			        </div>
            		</div>           		
         	</form>
 		</div>		

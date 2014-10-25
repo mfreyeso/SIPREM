@@ -6,6 +6,7 @@ import os, inspect, json
 import jsonparsers as jsp
 
 import estructuraLectura as esl
+
 #import resumen as rev
 import resumenred as rev
 import acumulado as acu
@@ -14,7 +15,9 @@ import jornada as jor
 import mother as mot
 import configuracion
 import indicador as indx
+
 import reportePrueba as rpb
+import reporteVertical as rv
 
 #Se importan las clases de acceso a datos
 import daoevento as dtev
@@ -36,7 +39,7 @@ configuracionP = configuracion.ConfiguracionMother()
 #Inicializacion de Configuracion por Defecto
 configuracionP.cargarConfiguracion(0, 0)
 
-#Objeto de Acceso a Datos de Evento
+#Objeto de Acceso a Datos de Evento,Registro y Estacion
 dtaevento = dtev.EventoDao()
 dtaregistro = dtreg.RegistroDao()
 dtaestacion = des.EstacionDao()
@@ -60,10 +63,15 @@ def inicio():
 	return template('menuinicio.tpl')
 
 
+"""---------------------------------------------------------------------------------------------------------------------------"""
+"""-------------------------------ROUTES LECTURA ARCHIVO----------------------------------------------------------------------"""
+
+
 @route('/cargarArchivo', method='POST')
 def loadFile():
 	fileRead = request.files.get('fileIn').file
 	estacionSeleccionada = int(request.forms.estacionselect)
+	nombreEstacion = dtaestacion.obtenerNombreEstacion(estacionSeleccionada)
 	estructuraMain = esl.estructuraLectura(int(configuracionP.entregarUbicacionVarP()), int(configuracionP.entregarTiempoDiferencia()))
 	estructuraMain.inicializarMetricas(configuracionP.entregarJornadas(), configuracionP.entregarCategorias())
 	if estructuraMain.leerArchivo(fileRead):
@@ -76,13 +84,27 @@ def loadFile():
 			eventosValidos = dtaevento.validarEventos(listEventos, estacionSeleccionada)
 			if eventosValidos != None:
 				dtaevento.almacenarEventos(eventosValidos, estacionSeleccionada)
-				return template('eventos.tpl', coleccionEventos=eventosValidos)
+				cadenaParametrizadaP = nombreEstacion + " "+ str(listRegistros[0].entregarFecha()) + " " + str(listRegistros[(len(listRegistros)-1)].entregarFecha())
+				return template('eventos.tpl', coleccionEventos=eventosValidos, cadenaParametrizada=cadenaParametrizadaP)
 			else:
 				return template('errorCargaArchivo.tpl', opcion=1)
 		else:
 			return template('errorCargaArchivo.tpl', opcion=1)
 	else:		
 		return template('errorCargaArchivo.tpl', opcion=2)
+
+@route('/archivoPlano')
+def cargaArchivoPlano():
+	vectorEstaciones = dtaestacion.cargarEstaciones()
+	return template('cargaArchivo.tpl', estaciones=vectorEstaciones)
+
+
+"""---------------------------------------------------------------------------------------------------------------------------"""
+
+
+
+"""---------------------------------------------------------------------------------------------------------------------------"""
+"""-------------------------------ROUTES EVENTOS--------------------------------------------------------------------------------"""
 
 @route('/cargarEventos', method='GET')
 def loadEvents():
@@ -93,11 +115,6 @@ def loadEvents():
 	except Exception:
 		vectorEstaciones = dtaestacion.cargarEstaciones()
 		return template('buscarEventosv2.tpl', estaciones=vectorEstaciones)
-
-@route('/archivoPlano')
-def cargaArchivoPlano():
-	vectorEstaciones = dtaestacion.cargarEstaciones()
-	return template('cargaArchivo.tpl', estaciones=vectorEstaciones)
 
 @route('/eventos', method='GET')
 def eventos():
@@ -116,8 +133,10 @@ def buscarEventos():
 	idEstacion = int(request.forms.estacionselect)
 	fechaInicial = str(request.forms.fechainicial)
 	fechaFinal = str(request.forms.fechafinal)
+	nombreEstacion = dtaestacion.obtenerNombreEstacion(idEstacion)
+	cadenaParametrizadaP = str(nombreEstacion) + " " + fechaInicial + " - " + fechaFinal
 	eventosEncontrados = dtaevento.buscarEventos(fechaInicial, fechaFinal, idEstacion)
-	return template('eventos.tpl', coleccionEventos=eventosEncontrados)
+	return template('eventos.tpl', coleccionEventos=eventosEncontrados, cadenaParametrizada=cadenaParametrizadaP)
 
 
 @route('/buscarEventosAvanzado', method='POST')
@@ -127,81 +146,36 @@ def buscarEventos():
 	fechaFinal = str(request.forms.fechafinal)
 	jornada = str(request.forms.jornada)
 	categoria = str(request.forms.categoria)
+	nombreEstacion = str(dtaestacion.obtenerNombreEstacion(idEstacion))
+	cadenaParametrizadaP = nombreEstacion + " " + fechaInicial + " - " + fechaFinal
 	eventosEncontrados = dtaevento.buscarEventosAvanzado(fechaInicial, fechaFinal, idEstacion, categoria, jornada)
-	return template('eventos.tpl', coleccionEventos=eventosEncontrados)
-
-@route('/tresumen')
-def resumen():
-	estructuraMain = mother.entregarEstructuraMain()
-	objetosEventos = estructuraMain.entregarColeccionEventos()
-	listaOcurrenciaJornadas = estructuraMain.entregarOcurrenciaJornadaEventos()
-	listaOcurrenciaCategorias = estructuraMain.entregarOcurrenciaCategoriaEventos()
-	objetosCategoria = estructuraMain.entregarCategoriaEventos()
-	objetosJornada = estructuraMain.entregarJornadaEventos()
-	objResumenP = rev.resumen(objetosEventos, objetosJornada, objetosCategoria)
-	mother.modificarResumen(objResumenP)
-	if not objResumenP.validarCompletitudResumen():
-		return template('resumen.tpl', objResumen=objResumenP, objMain=estructuraMain)
-	else:
-		return template('opcionResumen.tpl')
-
-@route('/resumenParametrizado', method='POST')
-def resumenParametrizado():
-	objResumenP = mother.entregarResumen()
-	resumenSeleccionado = int(request.forms.opcionResumen)
-	if resumenSeleccionado == 1:
-		response = objResumenP.resumenMensualAnual()
-		return template('resumenParametrizadoAnual.tpl', resource=response)
-
-	elif resumenSeleccionado == 2:
-		response = objResumenP.resumenSemestral()
-		return template('resumenParametrizadoSemestral.tpl', resource=response)
-
-	elif resumenSeleccionado == 3:
-		response = objResumenP.resumenTrimestral()
-		return template('resumenParametrizadoTrimestral.tpl', resource=response)
-
-	elif resumenSeleccionado == 4:
-		response = objResumenP.resumenTrimestralBimodal()
-		return template('resumenParametrizadoTrimestralBimodal.tpl', resource=response)
-
-@route('/acumuladoParametrizado', method='POST')
-def prepareAcumulate():	
-	seleccion = int(request.forms.opcionselect)
-	estructuraMain = mother.entregarEstructuraMain()
-	objetosEventos = estructuraMain.entregarColeccionEventos()
-	objAcumulador = acu.acumulado(objetosEventos)
-	if seleccion == 1:
-		opSelec = "Diario"
-		diaSeleccionado = int(request.forms.dia)
-		mesSeleccionado = int(request.forms.mes)
-		anoSeleccionado = int(request.forms.ano)		
-		cadenaParametrizadaP = str(diaSeleccionado) + " " + objAcumulador.entregarMes(mesSeleccionado -1) + " " + str(anoSeleccionado) 
-		resultadoP = objAcumulador.acumuladoParametrizado(seleccion, diaSeleccionado, mesSeleccionado, anoSeleccionado, 0, 0)
-	elif seleccion == 2:
-		mesSeleccionado = int(request.forms.mes)
-		anoSeleccionado = int(request.forms.ano)
-		opSelec = "Mensual"
-		cadenaParametrizadaP = objAcumulador.entregarMes(mesSeleccionado -1) + " " + str(anoSeleccionado)
-		resultadoP = objAcumulador.acumuladoParametrizado(seleccion, 0, mesSeleccionado, anoSeleccionado, 0, 0)
-	elif seleccion == 3:
-		anoSeleccionado = int(request.forms.ano)
-		opSelec = "Anual"
-		cadenaParametrizadaP = str(anoSeleccionado)
-		resultadoP = objAcumulador.acumuladoParametrizado(seleccion, 0, 0, anoSeleccionado, 0, 0)
-	elif seleccion == 4:
-		opSelec = "Semestral"
-		semestreSeleccionado = int(request.forms.semestre)
-		cadenaParametrizadaP = objAcumulador.entregarSemestre(semestreSeleccionado -1)
-		resultadoP = objAcumulador.acumuladoParametrizado(seleccion, 0, 0, 0, semestreSeleccionado, 0)
-	else:
-		opSelec = "Trimestral"
-		trimestreSeleccionado = int(request.forms.trimestre)
-		cadenaParametrizadaP = objAcumulador.entregarTrimestre(trimestreSeleccionado - 1)
-		resultadoP = objAcumulador.acumuladoParametrizado(seleccion, 0, 0, 0, 0, trimestreSeleccionado)		
-	return template('resacumulado.tpl', resultado=resultadoP, opseleccion=opSelec, cadenaParametrizada=cadenaParametrizadaP)
+	return template('eventos.tpl', coleccionEventos=eventosEncontrados, cadenaParametrizada=cadenaParametrizadaP)
 
 
+"""REPORTES DE EVENTOS"""
+
+@route('/reporteEventos', method='POST')
+def crearReporteEventos():
+	data = request.json
+	dirArchivo = str(data['dir'])
+	nombreArchivo = str(data['namefile'])
+	operador = configuracionP.entregarUsuarioActivo().nombre + " " + configuracionP.entregarUsuarioActivo().primerapellido 
+	try:
+		nuevoReporte = rv.ReporteVertical(nombreArchivo, dirArchivo, operador)
+		nuevoReporte.crearReporteVertical()		
+		return json.dumps({'efect': "El reporte fue creado con exito."})
+	except Exception, e:
+		print e
+		print "Error de Ind"
+		return json.dumps({'efect': "Existieron problemas en la construcción del reporte, intente de nuevo."})	
+
+
+"""---------------------------------------------------------------------------------------------------------------------------"""
+
+
+
+"""---------------------------------------------------------------------------------------------------------------------------"""
+"""ROUTES DEL MODULO DE RESUMEN"""
 
 @route('/crearResumen', method='POST')
 def crearResumen():
@@ -253,33 +227,27 @@ def vistaResumenOpciones():
 	vectorEstaciones = dtaestacion.cargarEstaciones()
 	return template('presumeneventos.tpl', estaciones=vectorEstaciones)
 
-@route('/tcarga')
-def vistaAcumulado():
-	vectorEstaciones = dtaestacion.cargarEstaciones()
-	return template('cargaArchivo.tpl', estaciones=vectorEstaciones)
+
+"""-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"""
+
+
+"""--------------------------------------------------------------------------------------------------------------------------------"""
+"""-------------------------------------------------ROUTES DE CONFIGURACION DE APP-------------------------------------------------"""
+
+
 
 @route('/static/:filename#.*#')
 def send_static(filename):
     return static_file(filename, root='./static/')
 
-@route('/reporteResumen', method="POST")
-def construirReporteResumen():
-	estructuraMain = mother.entregarEstructuraMain()
-	objetosEventos = estructuraMain.entregarColeccionEventos()
-	objetosCategoria = estructuraMain.entregarCategoriaEventos()
-	objetosJornada = estructuraMain.entregarJornadaEventos()
-	objResumenP = rev.resumen(objetosEventos, objetosCategoria, objetosJornada)
-	datosNecesarios = [estructuraMain, objResumenP]
-	reporteResumen = rpa.MakerResumen(datosNecesarios)
-	if reporteResumen.makerReporte():
-		"Revisar el Directorio"
-	else:
-		"Falla"
+"""--------------------------------------------------------------------------------------------------------------------------------"""
+
+
+
 
 
 """---------------------------------------------------------------------------------------------------------------------------"""
-
-"""ROUTES DEL MODULO DE INDICADOR AX"""
+"""----------------------------------------ROUTES DEL MODULO DE INDICADOR AX--------------------------------------------------"""
 
 @route('/tsindicador')
 def vistaIndicador():
@@ -290,6 +258,7 @@ def vistaIndicador():
 def calcularIndicador():
 	valIndicadorP = objIndicador.entregarIndicadorParametrizado()
 	estacionSeleccionada = int(request.forms.estacionselect)
+	nombreEstacion = dtaestacion.obtenerNombreEstacion(estacionSeleccionada)
 	opcionSeleccionada = int(request.forms.opcionselect)
 	if opcionSeleccionada ==1:
 		parametro = str(request.forms.ano)
@@ -306,6 +275,7 @@ def calcularIndicador():
 		parametro = [int(request.forms.trimestre), int(request.forms.ano)]
 		cadenaParametrizadaP = "Trimestre: " + objAcumulador.entregarTrimestre(0, parametro[0]) + " " + str(parametro[1])
 	indicadorObtenido = objIndicador.calcularIndicador(opcionSeleccionada, parametro, estacionSeleccionada)
+	cadenaParametrizadaP = nombreEstacion + " " + cadenaParametrizadaP
 	return template('indicadorObtenido.tpl', indicador = indicadorObtenido, cadenaParametrizada = cadenaParametrizadaP, opcion=opcionSeleccionada, periodos = parametro, valIndicador = valIndicadorP)
 
 @route('/configurarindicador')
@@ -343,6 +313,7 @@ def vistaAcumulado():
 @route('/buscarAcumulado', method='POST')
 def busquedaAcumulado():
 	estacionSeleccionada = int(request.forms.estacionselect)
+	nombreEstacion = str(dtaestacion.obtenerNombreEstacion(estacionSeleccionada))
 	opcionSeleccionada = int(request.forms.opcionselect)
 	if opcionSeleccionada ==1:
 		parametro = str(request.forms.ano)
@@ -363,14 +334,14 @@ def busquedaAcumulado():
 		parametro = [int(request.forms.anoinicial), int(request.forms.anofinal)]
 		cadenaParametrizadaP = "Personalizada: " + str(request.forms.anoinicial) + " " + str(request.forms.anofinal)
 	acumuladoObtenido = dtaregistro.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
-	objReporte = rpb.Reporte()
-	objReporte.crearReporte()
+	cadenaParametrizadaP = nombreEstacion + " " + cadenaParametrizadaP
 	return template('acumuladoObtenido.tpl', acumulado=acumuladoObtenido, cadenaParametrizada=cadenaParametrizadaP, opcion=opcionSeleccionada, periodos = parametro)
 
 
 @route('/buscarAcumuladoEventos', method='POST')
 def busquedaAcumulado():
 	estacionSeleccionada = int(request.forms.estacionselect)
+	nombreEstacion = str(dtaestacion.obtenerNombreEstacion(estacionSeleccionada))
 	opcionSeleccionada = int(request.forms.opcionselect)
 	if opcionSeleccionada ==1:
 		parametro = str(request.forms.fecha)
@@ -398,6 +369,7 @@ def busquedaAcumulado():
 		cadenaParametrizadaP = "Personalizada: Fecha Inicial: " + str(request.forms.fechainicial) + " Fecha Final: " + str(request.forms.fechafinal)
 	eventosEncontrados = dtaevento.busquedaParametrizada(opcionSeleccionada, parametro, estacionSeleccionada)
 	resultadosObtenidos = objAcumulador.calculoGeneralAcumuladoEventos(eventosEncontrados)
+	cadenaParametrizadaP = nombreEstacion + " " + cadenaParametrizadaP
 	return template('acumuladoObtenidoEventos.tpl', resultados=resultadosObtenidos, cadenaParametrizada=cadenaParametrizadaP)
 
 """-----------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -682,12 +654,15 @@ def detallesUsuario():
 	docidentificacion = usuarioActivo.docidentificacion
 	rol = configuracionP.obtenerTipoUsuario(usuarioActivo.tipousuario_id)
 	usuariosistema = usuarioActivo.usuariosistema
+	rolesEncontrados = configuracionP.obtenerTiposUsuario()
 	if rol == "Administrador":
 		rolId = 1
 	else:
 		rolId = 0
 	return template('detallesUsuario.tpl', nombre=nombreUsuario, papellido=primerApellido, sapellido=segundoApellido, mail=email, rolusuario=rol,
-	 identificacion=docidentificacion, accuser=usuariosistema, rolid=rolId)
+	 identificacion=docidentificacion, accuser=usuariosistema, rolid=rolId, roles=rolesEncontrados)
+
+
 
 @route('/teditusuario')
 def vistaEditarUsuario():

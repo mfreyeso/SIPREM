@@ -3,8 +3,6 @@ import datetime
 import macaron
 import models
 
-
-
 class resumen(object):	
 	def __init__(self):
 		super(resumen, self).__init__()

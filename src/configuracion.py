@@ -214,6 +214,15 @@ class ConfiguracionMother(object):
 			print e
 			return None
 
+	def obtenerTiposUsuario(self):
+		try:
+			macaron.macaronage("siprem.db")
+			tiposUsuarios = models.TipoUsuario.all()
+			return tiposUsuarios
+		except Exception, e:
+			print e
+			return None
+
 	def adicionarConfiguracion(self, idUsuarioP, nombreConfP, tDiferenciaP, ubicacionPrecipitacionP):
 		response = False
 		try:

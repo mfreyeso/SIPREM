@@ -8,7 +8,7 @@
 		<div class="col-xs-12 col-md-8">
 			<div class="panel panel-primary">
 					<div class="panel-heading">
-						<h4><b>Información de Usuario</b></h4>
+						<h4>Información de Usuario</h4>
 					</div>
 					<br>
 					<div class="panel-body">
@@ -60,43 +60,82 @@
 				<div id="myTabContent" class="tab-content">
 				   <div class="tab-pane fade in active" id="addu">
 				      <div class="col-md-6">
-				         <form role="form" style="padding:0.5cm" action="/crearconfiguracion" method="POST">
+				         <form role="form" style="padding:0.5cm">
 				            <div class="form-group" style="padding-right:2cm">
-				               <label for="nombre">Nombre Configuración</label>
-				               <input type="text" class="form-control" id="cnombrec" name="cnombrec" 
-				                  placeholder="Ejemplo: Configuracion Dos">
+				               <label for="nombre">Nombres</label>
+				               <input type="text" class="form-control" id="unombres" name="unombres" 
+				                  placeholder="Ejemplo: Alexander">
 				            </div>
 				            <div class="form-group" style="padding-right:2cm">
-				               <label for="tiempo">Diferencial de Tiempo Precipitación (min.)</label>
-				               <input class="form-control" type="number" id="cdfprec" name="cdfprec" min="5">
+				               <label for="papellido">Primer Apellido</label>
+				               <input class="form-control" type="text" id="upapellido" name="usapellido">
 				            </div>
 				            <div class="form-group" style="padding-right:2cm">
-				               <label for="tiempo">Posición Precipitación (Archivo Plano)</label>
-				               <input class="form-control" type="number" id="cpsprec" name="cpsprec" min="0">
-				            </div>                     
+				               <label for="sapellido">Segundo Apellido</label>
+				               <input class="form-control" type="text" id="usapellido" name="usapellido">
+				            </div>
+				            <div class="form-group" style="padding-right:2cm">
+				               <label for="sapellido">Numero Identificación</label>
+				               <input class="form-control" type="text" id="uidentificacion" name="uidentificacion">
+				            </div>
+				            <div class="form-group" style="padding-right:2cm">
+				               <label for="urol">Tipo Usuario</label>
+								<select class="form-control" name="urol" id="urol">
+									%for rol in roles:
+										<option value="{{rol.id}}">{{rol.tipo}}</option>
+									%end
+								</select>
+							</div>
 				         </form>         
 				      </div>
 				      <div class="col-md-6">
-				         <div class="form-group" align="center" style="padding:2.5cm" align="center">
-				            <!--<button type="button" id="btncrearco" class="btn btn-success btn-lg">Crear</button>-->
-				            <button id="btncrearconfiguracion" class="btn btn-success btn-lg">Crear</button>
-				         </div>   
-				      </div>
-				   </div>
+				      		<form role="form" style="padding:0.5cm">
+				      			<div class="form-group" style="padding-right:2cm">
+				                <label for="sapellido">Email</label>
+				                <input class="form-control" type="email" id="uemail" name="uemail">
+					            </div>
+					            <div class="form-group" style="padding-right:2cm">
+					               <label for="sapellido">Telefono</label>
+					               <input class="form-control" type="text" id="utelefono" name="utelefono">
+					            </div>
+					            <div class="form-group" style="padding-right:2cm">
+					               <label for="sapellido">Usuario de Acceso</label>
+					               <input class="form-control" type="text" id="unameuser" name="unameuser">
+					            </div>
+					            <div class="form-group" style="padding-right:2cm">
+					               <label for="sapellido">Contraseña</label>
+					               <input class="form-control" type="text" id="upassword" name="upassword">
+					            </div>
+					            <div class="form-group" style="padding-right:2cm">
+					               <label for="sapellido">Confirmar Contraseña</label>
+					               <input class="form-control" type="text" id="urpassword" name="urpassword">
+					            </div>
 
-				   <div class="tab-pane fade" id="editu">
+					         <div class="form-group" align="center" style="padding:0.5cm" align="center">
+					            <button id="btncrearusu" class="btn btn-primary">Añadir</button>
+					         </div>
+				      		</form>				      	  	   
+				      	</div>
+				 	</div>
+				   	<div class="tab-pane fade" id="editu">
 				      <div class="col-md-6">
+				      	<div>
+				      		
+				      	</div>
+				      	<div id="eformuser" style="display:none">
+				      		
+				      	</div>
 				      </div>
 				      <div class="col-md-6">
 				      </div>   
-				   </div>
+				   	</div>
 
-				   <div class="tab-pane fade" id="desu">
+				   	<div class="tab-pane fade" id="desu">
 				      <div class="col-md-6">
 				      </div>
 				      <div class="col-md-6">
 				      </div>      
-				   </div>
+				   	</div>
 				</div>
 			</div>			
 		</div>

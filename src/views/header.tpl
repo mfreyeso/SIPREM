@@ -2,7 +2,7 @@
 		<nav class="navbar navbar-default" role="navigation">
 		  <div class="container-fluid">
 		    <div class="navbar-header">
-		      <a class="navbar-brand" href="/index">SIPREM</a>
+		      <a class="navbar-brand" href="/menuinicio">SIPREM</a>
 		    </div>
 
 		    <!-- Navegador Izquierdo-->
@@ -13,7 +13,7 @@
 			  <!-- Navegador Derecho Ingreso Usuarios -->		     
 			    <ul class="nav navbar-nav navbar-right">
 			      <form class="navbar-form navbar-left" role="search">
-			       	<h5><a href="/usuario"><strong>Usuario</strong></a></h5>
+			       	<h5><a href="/usuariodetalles"><strong>Usuario</strong></a></h5>
 			      </form>			      
 			      <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>IDEA</b></a>
@@ -26,7 +26,7 @@
 		          <li class="dropdown">
 			        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Opciones<b class="caret"></b></a>
 			        <ul class="dropdown-menu">
-				        <li><a href="#">Cerrar Sesion</a></li>
+				        <li><a href="/index">Cerrar Sesion</a></li>
 				        <li class="divider"></li>
 				        <li><a href="#">Ayuda</a></li>
 			        </ul>

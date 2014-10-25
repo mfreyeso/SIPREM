@@ -2,7 +2,7 @@
 		<nav class="navbar navbar-default" role="navigation">
 		  <div class="container-fluid">
 		    <div class="navbar-header">
-		      <a class="navbar-brand" href="/index">SIPREM</a>
+		      <a class="navbar-brand" href="/menuinicio">SIPREM</a>
 		    </div>
 
 		    <!-- Navegador Izquierdo-->
