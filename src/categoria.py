@@ -21,5 +21,7 @@ class categoria(object):
 	def modificarMagnitud(self, medidaMagnitudP):
 		self.medidaMagnitud = medidaMagnitudP
 
+	def __str__(self):
+		print self.etiquetaCategoria
 	
 		

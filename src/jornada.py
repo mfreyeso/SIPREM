@@ -25,4 +25,7 @@ class jornada(object):
 		self.horaInicio = horaInicioP
 
 	def modificarHoraFin(self, horaFinP):
-		self.horaFin = horaFinP		
+		self.horaFin = horaFinP
+
+	def __str__(self):
+		print self.etiquetaJornada

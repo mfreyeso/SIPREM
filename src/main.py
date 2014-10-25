@@ -166,7 +166,6 @@ def crearReporteEventos():
 		return json.dumps({'efect': "El reporte fue creado con exito."})
 	except Exception, e:
 		print e
-		print "Error de Ind"
 		return json.dumps({'efect': "Existieron problemas en la construcción del reporte, intente de nuevo."})	
 
 
@@ -182,7 +181,8 @@ def crearResumen():
 	objresumen = rev.resumen()
 	vJornadas = configuracionP.obtenerJornadas()
 	vCategorias = configuracionP.obtenerCategorias()
-
+	print vJornadas
+	print vCategorias
 	#Se crea esta variable vacia si no es utiliza el caso para renderizar resultados
 	dias = 0
 
@@ -258,7 +258,7 @@ def vistaIndicador():
 def calcularIndicador():
 	valIndicadorP = objIndicador.entregarIndicadorParametrizado()
 	estacionSeleccionada = int(request.forms.estacionselect)
-	nombreEstacion = dtaestacion.obtenerNombreEstacion(estacionSeleccionada)
+	nombreEstacion = str(dtaestacion.obtenerNombreEstacion(estacionSeleccionada))
 	opcionSeleccionada = int(request.forms.opcionselect)
 	if opcionSeleccionada ==1:
 		parametro = str(request.forms.ano)

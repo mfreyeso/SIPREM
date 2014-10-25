@@ -110,6 +110,8 @@ class ConfiguracionMother(object):
 
 	#Transformacion de las categorias y jornadas obtenidas como DAO a las clases originales
 	def preparacionFinalConfiguracion(self, categoriasP, jornadasP):
+		self.listaJornadas = []
+		self.listaCategorias = []
 		for jorn in jornadasP:
 			etiqueta = jorn.nombre
 			horaInicio = jorn.horainicio

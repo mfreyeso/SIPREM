@@ -56,6 +56,8 @@ class acumulado(object):
 		for acm in datosAcumuladosP:
 			if acm < minimo and acm != 0:
 				minimo = acm
+		if minimo == 777:
+			minimo = 0
 		return minimo
 
 	def calcularAcumuladoMagnitudEventos(self, coleccionEventosP):

@@ -98,7 +98,6 @@ class estructuraLectura(object):
 		for registro in reader:
 			if banderaCabecera == 0:
 				if registro[0].split()[0].lower() == "fecha":
-					print "la encontre"
 					cabecera = registro
 					self.modificarEtiquetaVariables(cabecera)
 					banderaCabecera = 1
