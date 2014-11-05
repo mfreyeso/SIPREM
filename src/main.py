@@ -139,6 +139,7 @@ def buscarEventos():
 	return template('eventos.tpl', coleccionEventos=eventosEncontrados, cadenaParametrizada=cadenaParametrizadaP)
 
 
+
 @route('/buscarEventosAvanzado', method='POST')
 def buscarEventos():
 	idEstacion = int(request.forms.estacionselect)
