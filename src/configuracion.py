@@ -159,7 +159,7 @@ class ConfiguracionMother(object):
 			print e
 			return response		
 
-	def adicionarUsuario(self, nombreP, pApellidoP, sApellidoP, telefonoP, emailP, identificacionP, idTipoUsuarioP):
+	def adicionarUsuario(self, nombreP, pApellidoP, sApellidoP, telefonoP, emailP, identificacionP, idTipoUsuarioP, nameuserP, passwordP):
 		response = False
 		try:
 			#Se valida que no exista en la bd el usuario
@@ -175,7 +175,10 @@ class ConfiguracionMother(object):
 					telefono=telefonoP,
 					email=emailP,
 					docidentificacion=identificacion,
-					idtipou=tipoObject.pk)
+					idtipou=tipoObject.pk,
+					usuariosistema= nameuserP,
+					clave=passwordP,
+					estado = 1)
 				response = True
 				return response
 		except Exception, e:
@@ -224,6 +227,28 @@ class ConfiguracionMother(object):
 		except Exception, e:
 			print e
 			return None
+
+	def obtenerUsuariosActivos(self, estadoP):
+		try:
+			macaron.macaronage("siprem.db")
+			usuariosActivos = models.Usuario.select("estado=?", [estadoP])
+			if usuariosActivos.count() > 0:
+				return usuariosActivos
+			else:
+				return None
+		except Exception, e:
+			print e
+
+	def desactivarUsuario(self, identificacionP):
+		try:
+			macaron.macaronage("siprem.db")
+			usuario = models.Usuario.get(identificacionP)
+			usuario.estado = 0
+			usuario.save()
+			return True
+		except Exception, e:
+			print e
+			return False
 
 	def adicionarConfiguracion(self, idUsuarioP, nombreConfP, tDiferenciaP, ubicacionPrecipitacionP):
 		response = False

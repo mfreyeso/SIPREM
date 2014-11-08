@@ -663,6 +663,91 @@ def detallesUsuario():
 	return template('detallesUsuario.tpl', nombre=nombreUsuario, papellido=primerApellido, sapellido=segundoApellido, mail=email, rolusuario=rol,
 	 identificacion=docidentificacion, accuser=usuariosistema, rolid=rolId, roles=rolesEncontrados)
 
+@route('/validarUsuario', method="POST")
+def validarUsuario():
+	data = request.json
+	identificacionUsuario = data['identificacion']
+	busquedaUsuario = configuracionP.buscarUsuario(identificacionUsuario)
+	if busquedaUsuario != None:
+		return json.dumps({'efect': "0"})
+	else:
+		return json.dumps({'efect': "1"})
+
+
+@route('/crearUsuario', method="POST")
+def crearUsuario():
+	data = request.json
+	nombres = data['nombres']
+	papellido = data['papellido']
+	sapellido = data['sapellido']
+	identificacionUsuario = data['identificacion']
+	rolUsuario = data['rol']
+	telefono = data['telefono']
+	nameuser = data['nameuser']
+	password = data['password']
+	email = data['email']
+	if configuracionP.adicionarUsuario(nombres, papellido, sapellido, telefono, email, identificacionUsuario, rol, nameuser, password):
+		return json.dumps({'efect':"El usuario fue creado de manera exitosa en el sistema."})
+	else:
+		return json.dumps({'efect':"El usuario no fue creado en el sistema, intente de nuevo."})
+
+
+@route('/obtenerUsuarios', method="POST")
+def obtenerUsuarios():
+	data = request.json
+	estado = data['estado']
+	busquedaUsuarios = configuracionP.obtenerUsuariosActivos(estado)
+	if busquedaUsuarios != None:
+		resultado = {}
+		usuariosActivos = []
+		for usuario in busquedaUsuarios:
+			nombresApellidos = str(usuario.nombre) + " " + str(usuario.primerapellido) + " " + str(usuario.segundoapellido)
+			dicusuario = {'identificacion': str(usuario.docidentificacion), 'nombres': nombresApellidos}
+			usuariosActivos.append(dicusuario)
+		resultado['usuarios'] = usuariosActivos
+		resultado['efect'] = '1'
+		return json.dumps(resultado)
+	else:
+		return json.dumps({'efect': '0'})
+
+
+@route('/desactivarUsuario', method="POST")
+def desactivarUsuario():
+	data = request.json
+	identificacion = data['identificacion']
+	if configuracionP.desactivarUsuario(identificacion):
+		return json.dumps({'efect': 'El usuario fue desactivado de manera exitosa.'})		
+	else:
+		return json.dumps({'efect': "Se ha producido un error, intente de nuevo desactivar el usuario."})
+
+"""
+@route('/editarUsuario', method = "POST")
+def editarUsuario():
+"""
+
+@route('/obtenerUsuario', method = "POST")
+def obtenerUsuario():
+	data = request.json
+	identificacionUsuario = data['identificacion']
+	usuarioEncontrado = configuracionP.busquedaUsuario(identificacionUsuario)
+	if usuarioEncontrado != None:
+		nombres = usuarioEncontrado.nombre
+		papellido = usuarioEncontrado.primerapellido
+		sapellido = usuarioEncontrado.segundoapellido
+		telefono = usuarioEncontrado.telefono
+		email = usuarioEncontrado.email
+		identificacion = usuarioEncontrado.docidentificacion
+		nameuser = usuarioEncontrado.usuariosistema
+		clave = usuarioEncontrado.clave
+		resultado = {}
+		usuario = {'identificacion': str(identificacion), 'nombre': str(nombres),
+		'papellido': str(papellido), 'sapellido': str(sapellido), 'telefono': str(telefono),
+		'email': str(email), 'nameuser': str(nameuser), 'clave': str(clave)}
+		resultado['efect'] = '1'
+		resultado['usuario'] = usuario
+		return json.dumps(resultado)		
+	else:
+		return json.dumps({'efect': '0'})
 
 
 @route('/teditusuario')

@@ -18,6 +18,7 @@ class Usuario(macaron.Model):
 	tipousuario = macaron.ManyToOne(TipoUsuario, related_name="usuariostp")
 	usuariosistema = macaron.CharField(max_length=32, null=False)
 	clave = macaron.CharField(max_length=32, null=False)
+	estado = macaron.IntegerField(null=True)
 
 class Configuracion(macaron.Model):
 	tiempodiferencia = macaron.IntegerField()

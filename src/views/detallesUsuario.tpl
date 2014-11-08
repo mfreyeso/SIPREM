@@ -118,16 +118,78 @@
 				      	</div>
 				 	</div>
 				   	<div class="tab-pane fade" id="editu">
-				      <div class="col-md-6">
-				      	<div>
-				      		
-				      	</div>
-				      	<div id="eformuser" style="display:none">
-				      		
-				      	</div>
-				      </div>
-				      <div class="col-md-6">
-				      </div>   
+				   		<div class="row">
+				   			<div class="col-md-6">
+						      	<div>
+						      		<div class="form-group" align="center" style="padding:1.3cm" align="center">
+							            <button id="btnloadusu" class="btn btn-primary">Cargar Usuarios</button>
+							        </div>
+						      	</div>
+						      	<div id="loadusers" style="display:none">					      		
+						      	</div>
+					      	</div>				   			
+				   		</div>
+				   		<div class="row">
+				   			<div id="formedituser" style="display:none">
+				   				<div class="col-md-6">
+							         <form role="form" style="padding:0.5cm">
+							            <div class="form-group" style="padding-right:2cm">
+							               <label for="nombre">Nombres</label>
+							               <input type="text" class="form-control" id="eunombres" name="unombres" 
+							                  placeholder="Ejemplo: Alexander">
+							            </div>
+							            <div class="form-group" style="padding-right:2cm">
+							               <label for="papellido">Primer Apellido</label>
+							               <input class="form-control" type="text" id="eupapellido" name="usapellido">
+							            </div>
+							            <div class="form-group" style="padding-right:2cm">
+							               <label for="sapellido">Segundo Apellido</label>
+							               <input class="form-control" type="text" id="eusapellido" name="usapellido">
+							            </div>
+							            <div class="form-group" style="padding-right:2cm">
+							               <label for="sapellido">Numero Identificación</label>
+							               <input class="form-control" type="text" id="euidentificacion" name="uidentificacion">
+							            </div>
+							            <div class="form-group" style="padding-right:2cm">
+							               <label for="urol">Tipo Usuario</label>
+											<select class="form-control" name="urol" id="eurol">
+												%for rol in roles:
+													<option value="{{rol.id}}">{{rol.tipo}}</option>
+												%end
+											</select>
+										</div>
+							         </form>         
+							      </div>
+							    <div class="col-md-6">
+							      		<form role="form" style="padding:0.5cm">
+							      			<div class="form-group" style="padding-right:2cm">
+							                <label for="sapellido">Email</label>
+							                <input class="form-control" type="email" id="euemail" name="uemail">
+								            </div>
+								            <div class="form-group" style="padding-right:2cm">
+								               <label for="sapellido">Telefono</label>
+								               <input class="form-control" type="text" id="eutelefono" name="utelefono">
+								            </div>
+								            <div class="form-group" style="padding-right:2cm">
+								               <label for="sapellido">Usuario de Acceso</label>
+								               <input class="form-control" type="text" id="eunameuser" name="unameuser">
+								            </div>
+								            <div class="form-group" style="padding-right:2cm">
+								               <label for="sapellido">Contraseña</label>
+								               <input class="form-control" type="text" id="eupassword" name="upassword">
+								            </div>
+								            <div class="form-group" style="padding-right:2cm">
+								               <label for="sapellido">Confirmar Contraseña</label>
+								               <input class="form-control" type="text" id="eurpassword" name="urpassword">
+								            </div>
+
+								         <div class="form-group" align="center" style="padding:0.5cm" align="center">
+								            <button id="btneditusu" class="btn btn-primary">Editar</button>
+								         </div>
+							      		</form>				      	  	   
+							    </div>	
+				   			</div>
+				   		</div>				        
 				   	</div>
 
 				   	<div class="tab-pane fade" id="desu">
@@ -140,6 +202,134 @@
 			</div>			
 		</div>
 		%end
-	</div>	
+	</div>
+	<script>
+		$("#btncrearusu").click(function(){
+			var nombresUsuario = $("#unombres").val();
+			var primerApellidoUsuario = $("#upapellido").val();
+			var segundoApellidoUsuario = $("#usapellido").val();
+			var identificacionUsuario = $("#uidentificacion").val();
+			var rolUsuario = $("#urol").val();
+			var utelefono = $("#utelefono").val();
+			var email = $("#uemail").val();
+			var unameUser = $("#unameuser").val();
+			var upasswordUsuario = $("#upassword").val();
+			var urpasswordUsuario = $("#urpassword").val();			
+			if(upasswordUsuario == urpasswordUsuario){
+				alert("Las constraseñas ingresadas no coinciden. Intente de Nuevo.");
+				$(location).attr('href', '/usuariodetalles');
+			}
+			else{
+				var post_data = {"identificacion": identificacionUsuario};
+				$.ajax(
+					{
+						type : 'POST',
+					    url : 'validarUsuario',
+					    data : JSON.stringify(post_data),
+					    contentType : "application/json; charset=utf-8",
+					    dataType: 'json',
+					    success : function(data){
+					    	if (parseInt(data['efect']) == 0){
+					    		alert("El usuario ya existe en el sistema.");
+					    	}
+					    	else{
+					    		var post_dataIn = {'nombres': nombresUsuario, 'papellido': primerApellidoUsuario, 'sapellido': segundoApellidoUsuario, 'identificacion': identificacionUsuario, 'rol': rolUsuario, 'telefono': utelefono, 'email': email, 'nameuser': unameUser, 'password': upasswordUsuario};
+					    		$.ajax(
+					    			{
+					    				type : 'POST',
+									    url : 'crearUsuario',
+									    data : JSON.stringify(post_dataIn),
+									    contentType : "application/json; charset=utf-8",
+									    dataType: 'json',
+									    success : function(data){
+									    	$.each(data, function(index, value){
+								               alert(value);
+								            });
+								            $(location).attr('href', '/usuariodetalles');
+									    }
+					    			});					    			
+					    	}
+					    }
+					});
+			}
+		});
+
+		$("#loadusers").click(function(){
+			var activos = 1;
+			var post_data = {'estado': activos};
+			$.ajax({
+				type : 'POST',
+		        url : 'obtenerUsuarios',
+		        data : JSON.stringify(post_data),
+		        contentType : "application/json; charset=utf-8",
+		        dataType : 'json',
+		        success : function(data){
+		        	if (parseInt(data['efect']) == 1){
+		        		var cadenaInicial ="<form role='form'><div class='form-group'>\
+			            <label for='estacion'>Estación</label>\
+			            <select class='form-control' name='ususedit' id='ususedit'>";
+			            var cadenaFinal = "</select></div></form>";
+			            var cadenaCentro = " ";
+			            $(data.usuarios).each(function(index, value){
+			              var opcion = "<option value='"+value['identificacion']+"'>"+value['nombres']+value['apellidos']+"</option>";
+			              cadenaCentro+=opcion;
+			            });
+			            var cadena = cadenaInicial + cadenaCentro + cadenaFinal;
+			            $("#loadusers").append(cadena);
+			            var btneditarusuarios = "<div class='form-group' align='center' style='padding:0.5cm'\
+			            align='center'><button id='btnformeditusu' class='btn btn-primary'>Cargar Formulario</button>\
+			            </div>";
+			            $("#loadusers").append(btneditarusuarios);
+			            $("#loadusers").show();
+		        	}
+		        	else{
+		        		alert("No exiten otros usuarios activos.");
+		        	}		        	
+		        }
+			});
+		});
+		
+		$("#btnformeditusu").click(function(){
+			var usuarioSeleccionado = $("ususedit").val();
+			var post_data = {'identificacion': usuarioSeleccionado};
+			$.ajax({
+				type : 'POST',
+		        url : 'obtenerUsuarios',
+		        data : JSON.stringify(post_data),
+		        contentType : "application/json; charset=utf-8",
+		        dataType : 'json',
+		        success : function(data){
+		        	if (parseInt(data['efect']) == 1){
+		        		usuario = data['usuario'];
+		        		nombres = usuario['nombre'];
+		        		papellido = usuario['papellido'];
+		        		sapellido = usuario['sapellido'];
+		        		telefono = usuario['telefono'];
+		        		email = usuario['email'];
+		        		nameuser = usuario['nameuser'];
+		        		clave = usuario['clave'];
+
+		        		$("#eunombres").attr("value", nombres);
+		        		$("#eupapellido").attr("value", papellido);
+		        		$("#eusapellido").attr("value", sapellido);
+		        		$("#eutelefono").attr("value", telefono);
+		        		$("#euemail").attr("value", email);
+		        		$("#eunameuser").attr("value", nameuser);
+		        		$("#eupassword").attr("value", clave);
+		        		$("#eurpassword").attr("value", clave);
+		        		$("#formedituser").show();
+		        	}
+		        	else{
+		        		alert("Ocurrio un error en el sistema, Intente de nuevo.");
+		        	}		        	
+		        }
+			});			
+		});
+
+		$("#btneditusu").click(function(){
+
+
+		});
+	</script>	
 </body>
 </html>
