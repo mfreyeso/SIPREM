@@ -723,6 +723,15 @@ def desactivarUsuario():
 """
 @route('/editarUsuario', method = "POST")
 def editarUsuario():
+	nombres
+	papellido
+	sapellido
+	rol
+	identificacion
+	email
+	telefono
+	nameuser
+	password
 """
 
 @route('/obtenerUsuario', method = "POST")

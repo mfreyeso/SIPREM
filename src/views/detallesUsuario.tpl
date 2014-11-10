@@ -104,15 +104,15 @@
 					            </div>
 					            <div class="form-group" style="padding-right:2cm">
 					               <label for="sapellido">Contraseña</label>
-					               <input class="form-control" type="text" id="upassword" name="upassword">
+					               <input class="form-control" type="password" id="upassword" name="upassword">
 					            </div>
 					            <div class="form-group" style="padding-right:2cm">
 					               <label for="sapellido">Confirmar Contraseña</label>
-					               <input class="form-control" type="text" id="urpassword" name="urpassword">
+					               <input class="form-control" type="password" id="urpassword" name="urpassword">
 					            </div>
 
 					         <div class="form-group" align="center" style="padding:0.5cm" align="center">
-					            <button id="btncrearusu" class="btn btn-primary">Añadir</button>
+					            <button id="btncrearusu" type="button" class="btn btn-primary">Añadir</button>
 					         </div>
 				      		</form>				      	  	   
 				      	</div>
@@ -121,8 +121,8 @@
 				   		<div class="row">
 				   			<div class="col-md-6">
 						      	<div>
-						      		<div class="form-group" align="center" style="padding:1.3cm" align="center">
-							            <button id="btnloadusu" class="btn btn-primary">Cargar Usuarios</button>
+						      		<div class="form-group" align="center" style="padding-top:1.3cm" align="center">
+							            <button id="btnloadusu" type="button" class="btn btn-primary">Cargar Usuarios</button>
 							        </div>
 						      	</div>
 						      	<div id="loadusers" style="display:none">					      		
@@ -176,15 +176,15 @@
 								            </div>
 								            <div class="form-group" style="padding-right:2cm">
 								               <label for="sapellido">Contraseña</label>
-								               <input class="form-control" type="text" id="eupassword" name="upassword">
+								               <input class="form-control" type="password" id="eupassword" name="upassword">
 								            </div>
 								            <div class="form-group" style="padding-right:2cm">
 								               <label for="sapellido">Confirmar Contraseña</label>
-								               <input class="form-control" type="text" id="eurpassword" name="urpassword">
+								               <input class="form-control" type="password" id="eurpassword" name="urpassword">
 								            </div>
 
 								         <div class="form-group" align="center" style="padding:0.5cm" align="center">
-								            <button id="btneditusu" class="btn btn-primary">Editar</button>
+								            <button id="btneditusu" type="button" class="btn btn-primary">Editar</button>
 								         </div>
 							      		</form>				      	  	   
 							    </div>	
@@ -215,7 +215,7 @@
 			var unameUser = $("#unameuser").val();
 			var upasswordUsuario = $("#upassword").val();
 			var urpasswordUsuario = $("#urpassword").val();			
-			if(upasswordUsuario == urpasswordUsuario){
+			if(upasswordUsuario != urpasswordUsuario){
 				alert("Las constraseñas ingresadas no coinciden. Intente de Nuevo.");
 				$(location).attr('href', '/usuariodetalles');
 			}
@@ -254,7 +254,7 @@
 			}
 		});
 
-		$("#loadusers").click(function(){
+		$("#btnloadusu").click(function(){
 			var activos = 1;
 			var post_data = {'estado': activos};
 			$.ajax({
@@ -271,13 +271,13 @@
 			            var cadenaFinal = "</select></div></form>";
 			            var cadenaCentro = " ";
 			            $(data.usuarios).each(function(index, value){
-			              var opcion = "<option value='"+value['identificacion']+"'>"+value['nombres']+value['apellidos']+"</option>";
+			              var opcion = "<option value='"+value['identificacion']+"'>"+value['nombres']+"</option>";
 			              cadenaCentro+=opcion;
 			            });
 			            var cadena = cadenaInicial + cadenaCentro + cadenaFinal;
 			            $("#loadusers").append(cadena);
-			            var btneditarusuarios = "<div class='form-group' align='center' style='padding:0.5cm'\
-			            align='center'><button id='btnformeditusu' class='btn btn-primary'>Cargar Formulario</button>\
+			            var btneditarusuarios = "<div class='form-group' align='center' style='padding:0.3cm'\
+			            align='center'><button id='dformedit' type='button' class='btn btn-primary'>Cargar Formulario</button>\
 			            </div>";
 			            $("#loadusers").append(btneditarusuarios);
 			            $("#loadusers").show();
@@ -289,8 +289,9 @@
 			});
 		});
 		
-		$("#btnformeditusu").click(function(){
-			var usuarioSeleccionado = $("ususedit").val();
+		$("#dformedit").click(function(){
+			alert("Disparado");
+			var usuarioSeleccionado = $("#ususedit").val();
 			var post_data = {'identificacion': usuarioSeleccionado};
 			$.ajax({
 				type : 'POST',
