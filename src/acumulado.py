@@ -35,8 +35,30 @@ class acumulado(object):
 	def calcularAcumuladoMagnitudRegistros(self, coleccionRegistrosP):
 		acumulado = 0
 		for registro in coleccionRegistrosP:
-			acumulado += registro.entregarPrecipitacion()
+			try:
+				acumulado += registro.entregarPrecipitacion()
+			except TypeError:
+				acumulado+=0			
 		return acumulado
+
+	def calcularEstadisticos(self, datosAcumuladosP):
+		maximo = max(datosAcumuladosP)
+		minimo = self.calcularMinimoRegistros(datosAcumuladosP)
+		suma = 0
+		for acm in datosAcumuladosP:
+			suma+=acm
+		promedio = suma / (len(datosAcumuladosP) - 1)
+		objetoEstadistico = Estadisticos(minimo, maximo, suma, promedio)
+		return objetoEstadistico
+
+	def calcularMinimoRegistros(self, datosAcumuladosP):
+		minimo = 777
+		for acm in datosAcumuladosP:
+			if acm < minimo and acm != 0:
+				minimo = acm
+		if minimo == 777:
+			minimo = 0
+		return minimo
 
 	def calcularAcumuladoMagnitudEventos(self, coleccionEventosP):
 		acumulado = 0
@@ -83,5 +105,28 @@ class acumulado(object):
 		self.calcularAcumuladoDuracionMaxEventos(coleccionEventosP),
 		self.calcularAcumuladoDuracionNetaEventos(coleccionEventosP)]
 		return resultados
+
+class Estadisticos(object):
+	"""docstring for Estadisticos"""
+	def __init__(self, minimoP, maximoP, sumaP, promedioP):
+		super(Estadisticos, self).__init__()
+		self.minimo = minimoP
+		self.maximo = maximoP
+		self.suma = sumaP
+		self.promedio = promedioP
+
+	def entregarMinimo(self):
+		return self.minimo
+
+	def entregarMaximo(self):
+		return self.maximo
+
+	def entregarSumatoria(self):
+		return self.suma
+
+	def entregarPromedio(self):
+		return self.promedio
+
+		
 
 	

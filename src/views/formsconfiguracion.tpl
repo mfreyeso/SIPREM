@@ -34,8 +34,7 @@
 
    <div class="tab-pane fade" id="editc">
       <div class="col-md-6">
-
-         <div class="form-group" style="padding-top:1cm">
+         <div class="form-group" style="padding-top:0.9cm; padding-right:1.5cm">
             <select name="editconfiguracion" id="editconfiguracion" class="form-control">
                %for configuracion in configuraciones:
                <option value="{{configuracion.id}}">{{configuracion.nombre}}</option>
@@ -43,7 +42,7 @@
             </select>            
          </div>
 
-         <div class="form-group" style="padding-top:0.5cm">
+         <div class="form-group" style="padding-top:0.2cm">
             <button type="button" id="btncargarconfiguracion" class="btn btn-success">Cargar</button>
          </div>
 
@@ -66,15 +65,43 @@
          </div>         
       </div>
       <div class="col-md-6">
-         <div class="row" style="padding:1cm">
-            <h2>Nosepo1</h2>
+         <div class="row" style="padding-top:0.5cm; padding-left:0.2cm; padding-right:0.2cm">
+            <h4>Añadir Categorias</h4>
+            <form role="form">
+               <div class="form-group">
+                  <label for="nombre">Categoria</label>
+                  <select name="addcat" id="addcat" class="form-control">
+                     %for cat in categorias:
+                     <option value="{{cat.entregarIdentificacion()}}">{{cat.entregarEtiqueta()}}</option>
+                     %end
+               </select>
+               </div>
+               <div class="form-group" style="padding-top:0.2cm" align="center">
+                  <button type="button" id="btnaddcat" class="btn btn-success">Añadir</button>
+               </div>                   
+            </form>
          </div>
-
-         <div class="row" style="padding:1cm">
-            <h2>NosePo2</h2>
+         <div class="row" style="padding-top:0.1cm; padding-left:0.2cm; padding-right:0.2cm">
+            <h4>Añadir Jornadas</h4>
+               <form role="form">
+               <div class="form-group">
+                  <label for="nombre">Jornadas</label>
+                  <select name="addjor" id="addjor" class="form-control">
+                     %for jor in jornadas:
+                     <option value="{{jor.entregarIdentificacion()}}">{{jor.entregarEtiquetaJornada()}}</option>
+                     %end
+               </select>
+               </div>
+               <div class="form-group" style="padding-top:0.2cm" align="center">
+                  <button type="button" id="btnaddjor" class="btn btn-success">Añadir</button>
+               </div>                   
+            </form>
          </div>
-                  
-      </div>
+         <div class="row" style="padding-top:0.1cm; padding-left:0.2cm; padding-right:0.2cm">
+            <div id="catjors" style="display:none">            
+            </div>
+         </div>                           
+      </div>   
    </div>
    <div class="tab-pane fade" id="actc">
       <div class="col-md-6">
@@ -84,8 +111,7 @@
                <option value="{{configuracion.id}}">{{configuracion.nombre}}</option>
                %end
             </select>            
-         </div>
-         
+         </div>         
       </div>
       <div class="col-md-6">
          <div class="form-group" style="padding: 1cm" align="center">
@@ -154,16 +180,103 @@
             var nombreConfiguracion = configuracionObtenida['nombre'];
             var posicion = configuracionObtenida['posicion'];
             var diferencial = configuracionObtenida['diferencial'];
-            $("#enombrec").attr("placeholder", nombreConfiguracion);
+            $("#enombrec").attr("value", nombreConfiguracion);
             $("#epsprec").attr("value", posicion);
             $("#edfprec").attr("value", diferencial);
             $("#formeditconf").show();
-          }
-          else{
+
+            var titulo = "<h4>Categorias y Jornadas de la Configuración</h4><br>";
+            var tablaJornadasCategoriasInicio = "<table class='table table-hover' margin='auto'>\
+                     <tr>\
+                        <td align='center'><strong>Categorias</strong></td>\
+                        <td align='center'><strong>Jornadas</strong></td>\
+                     </tr>\
+                     <tr>\
+                     <td>";
+           var tablaCategoriasInicio =" <table class='table table-hover' margin='auto'>\
+                                 <tr>\
+                                 <td align='center'><strong>Categoria</strong></td>\
+                                 <td align='center'><strong>Metrica</strong></td>\
+                                 </tr>";
+
+            var tablaCategoriasFin = "</table></td>";
+
+            var filasCategorias ="";
+            $(data.categorias).each(function(index, value){
+               var categoria = "<tr><td align='center'>"+value['etcategoria']+"</td>\
+               <td align='center'>"+value['metrica']+"</td></tr>";
+               filasCategorias+=categoria;
+            });
+            var tablaCategorias = tablaCategoriasInicio + filasCategorias + tablaCategoriasFin;         
+           
+            var tablaJornadasInicio = "<td><table class='table table-hover' margin='auto'>\
+                                 <tr>\
+                                 <td align='center'><strong>Jornada</strong></td>\
+                                 <td align='center'><strong>Hora Inicio</strong></td>\
+                                 <td align='center'><strong>Hora Fin</strong></td>\
+                                 </tr>";
+            var tablaJornadasFin = "</table>";
+
+            var filasJornadas ="";
+            $(data.jornadas).each(function(index, value){
+               var jornada = "<tr><td align='center'>"+value['etjornada']+"</td>\
+               <td align='center'>"+value['hinicio']+"</td>\
+               <td align='center'>"+value['hfin']+"</td></tr>";
+               filasJornadas+=jornada;
+            });
+            var tablaJornadas = tablaJornadasInicio + filasJornadas + tablaJornadasFin;
+
+            var tablaJornadasCategoriasFin = "</td></tr></table>";
+            var tablaFinal = titulo + tablaJornadasCategoriasInicio + tablaCategorias + tablaJornadas + tablaJornadasCategoriasFin;
+            $("#catjors").empty();
+            $("#catjors").append(tablaFinal);
+            $("#catjors").show();           
+         }
+         else{
             alert("La configuracion no pudo ser cargada en el sistema, Intente de Nuevo.");
           }
          }
       });
-   }); 
+   });
+
+   $("#btnaddcat").click(function(){
+      var identificacionConfiguracion = $("#editconfiguracion").val();
+      var identificacionCategoria = $("#addcat").val();
+      var post_data = {'idcat': identificacionCategoria, 'idconf': identificacionConfiguracion};
+      $.ajax
+      ({
+         type : 'POST',
+         url : 'adicionarCategoria',
+         data : JSON.stringify(post_data),
+         contentType : "application/json; charset=utf-8",
+         dataType : 'json',
+         success :  function(data){
+            $.each(data, function(index, value){
+               alert(value);
+            });
+            //$(location).attr('href', '/tconfiguracion');
+         }
+      });
+   });
+
+   $("#btnaddjor").click(function(){
+      var identificacionConfiguracion = $("#editconfiguracion").val();
+      var identificacionJornada = $("#addjor").val();
+      var post_data = {'idjor': identificacionJornada, 'idconf': identificacionConfiguracion};
+      $.ajax
+      ({
+         type : 'POST',
+         url : 'adicionarJornada',
+         data : JSON.stringify(post_data),
+         contentType : "application/json; charset=utf-8",
+         dataType : 'json',
+         success :  function(data){
+            $.each(data, function(index, value){
+               alert(value);
+            });
+            //$(location).attr('href', '/tconfiguracion');
+         }
+      });
+   });   
 </script>
 

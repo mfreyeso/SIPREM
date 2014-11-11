@@ -35,12 +35,6 @@ $(document).ready(function(){
 			estacionselect:{
 				required: true
 			},
-			jornada:{
-				required: true
-			},
-			categoria:{
-				required: true
-			},
 			fechafinal : "personalizadocheck"
 		},
 		messages:{

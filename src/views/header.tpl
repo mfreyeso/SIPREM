@@ -2,27 +2,19 @@
 		<nav class="navbar navbar-default" role="navigation">
 		  <div class="container-fluid">
 		    <div class="navbar-header">
-		      <a class="navbar-brand" href="/index">SIPREM</a>
+		      <a class="navbar-brand" href="/menuinicio">SIPREM</a>
 		    </div>
 
 		    <!-- Navegador Izquierdo-->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav">
-		        <li class="active"><a href="/index">Inicio</a></li>
-		        
+		      <ul class="nav navbar-nav">		        	        
 		      </ul>
 		     
 			  <!-- Navegador Derecho Ingreso Usuarios -->		     
 			    <ul class="nav navbar-nav navbar-right">
 			      <form class="navbar-form navbar-left" role="search">
-			        <div class="form-group">
-			          <input type="text" class="form-control" placeholder="Usuario" name="nombreusuario">
-			        </div>
-			        <div class="form-group">
-			        <input type="password" class="form-control" placeholder="Contraseña" name="clave">
-			        </div>
-			        <button type="submit" class="btn btn-primary">Ingresar</button>
-			      </form>
+			       	<h5><a href="/usuariodetalles"><strong>Usuario</strong></a></h5>
+			      </form>			      
 			      <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>IDEA</b></a>
 		          <ul class="dropdown-menu">
@@ -34,7 +26,7 @@
 		          <li class="dropdown">
 			        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Opciones<b class="caret"></b></a>
 			        <ul class="dropdown-menu">
-				        <li><a href="#">Cerrar Sesion</a></li>
+				        <li><a href="/index">Cerrar Sesion</a></li>
 				        <li class="divider"></li>
 				        <li><a href="#">Ayuda</a></li>
 			        </ul>

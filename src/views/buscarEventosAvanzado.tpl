@@ -42,6 +42,7 @@
            				<div class="form-group">
 			                <label for="estacion">Jornada de Ocurrencia</label>
 			                <select class="form-control" name="jornada">
+			                	<option>-----</option>
 			                  %for jornada in jornadas:
 			                  	<option>{{jornada.entregarEtiquetaJornada()}}</option>
 			                  %end
@@ -53,19 +54,19 @@
            				<div class="form-group">
 			                <label for="estacion">Categoria de Precipitación</label>
 			                <select class="form-control" name="categoria">
+			                  <option>-----</option>			                  
 			                  %for categoria in categorias:
 			                  	<option>{{categoria.entregarEtiqueta()}}</option>
 			                  %end
 			                </select>
-			           	</div>
-           				
+			           	</div>           				
            			</div>
            		</div>
            		<div class="row">
            			<div class="form-group" align="center">
 			            <input name="butBuscar" type="submit" value="Buscar Eventos" class="btn btn-primary">
 			        </div>
-           		</div>
+           		</div>           		
         	</form>
 		</div>		
 	</div>

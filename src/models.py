@@ -16,6 +16,9 @@ class Usuario(macaron.Model):
 	email = macaron.CharField(max_length=48, null=False)
 	docidentificacion = macaron.CharField(max_length=18, null=False)
 	tipousuario = macaron.ManyToOne(TipoUsuario, related_name="usuariostp")
+	usuariosistema = macaron.CharField(max_length=32, null=False)
+	clave = macaron.CharField(max_length=32, null=False)
+	estado = macaron.IntegerField(null=True)
 
 class Configuracion(macaron.Model):
 	tiempodiferencia = macaron.IntegerField()
@@ -71,11 +74,11 @@ class Acumulado(macaron.Model):
 
 class ConfCategoria(macaron.Model):
 	configuracion = macaron.ManyToOne(Configuracion, related_name="configuracionescf")
-	categoriaC = macaron.ManyToOne(Categoria, related_name="categoriascf")
+	categoria = macaron.ManyToOne(Categoria, related_name="categoriascf")
 
 class ConfJornada(macaron.Model):
 	configuracion = macaron.ManyToOne(Configuracion, related_name="configuracionescj")
-	jornadaC = macaron.ManyToOne(Jornada, related_name="jornadascj")
+	jornada = macaron.ManyToOne(Jornada, related_name="jornadascj")
 
 class AlmacenSerializado(object):
 		"""docstring for AlmacenSerializado"""
@@ -92,7 +95,7 @@ class Evento(macaron.Model):
 	magnitud = macaron.FloatField(null=False)
 	duracion = macaron.IntegerField(null=False)
 	intmedia = macaron.FloatField(null=False)
-	intmaxima = macaron.FloatField(null=False)
+	intmaxima = macaron.CharField(null=False)
 	tipoprec = macaron.CharField(max_length=32, null=False)
 	observ = macaron.CharField(max_length=512)
 	jorprec = macaron.CharField(max_length=32, null=False)

@@ -62,8 +62,15 @@ class EventoDao(object):
 		try:
 			macaron.macaronage("siprem.db")
 			estacionDao = models.Estacion.get(estacionIdP)
-			eventosDao = estacionDao.eventos.select("fecha between ? and ? and tipoprec = ? and jorprec = ?", [fechaInicialP, fechaFinalP, categoriaP, jornadaP])
-			eventos = self.transformarEventosModelo(eventosDao)
+			if categoriaP == "-----":
+				eventosDao = estacionDao.eventos.select("fecha between ? and ? and jorprec = ?", [fechaInicialP, fechaFinalP, jornadaP])
+				eventos = self.transformarEventosModelo(eventosDao)
+			elif jornadaP == "-----":
+				eventosDao = estacionDao.eventos.select("fecha between ? and ? and tipoprec = ?", [fechaInicialP, fechaFinalP, categoriaP])
+				eventos = self.transformarEventosModelo(eventosDao)
+			else:
+				eventosDao = estacionDao.eventos.select("fecha between ? and ? and tipoprec = ? and jorprec = ?", [fechaInicialP, fechaFinalP, categoriaP, jornadaP])
+				eventos = self.transformarEventosModelo(eventosDao)
 			return eventos	
 		except Exception, e:
 			print e

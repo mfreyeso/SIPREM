@@ -1,100 +1,313 @@
-from datetime import date
+import models
+import macaron
+import registro as reg
+import datetime
+import acumulado as acm
+import daoregistro as dreg
 
 class indicadorA(object):
 	
-	def __init__(self, cEventosP, indicadorP):
+	def __init__(self, indicadorP):
 		super(indicadorA, self).__init__()
-		self.coleccionEventos = cEventosP
 		self.indicador = indicadorP
-		self.indicadorCalculado = 0
-	
+			
 	def entregarIndicadorParametrizado(self):
 		return self.indicador
 
-	def modificarIndicarCalculado(self, caluloIndicador):
-		return self.indicadorCalculado
+	def modificarIndicadorParametrizado(self, nuevoIndicadorP):
+		self.indicador = nuevoIndicadorP
 
-	def entregarColeccionEventos(self):
-		return self.coleccionEventos
-
-	def calcularIndicador(self, diaP, mesP, anoP):
-		limiteMes = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-		conteoIndicador = self.entregarIndicadorParametrizado()
-		coleccionEventos = self.entregarColeccionEventos()
-
-		indicadorCalculadoTemp = 0
-
-		if mesP == 1:
-			if diaP < conteoIndicador:
-				diasFaltantes = conteoIndicador - diaP
-				diaInicio = (31 - diasFaltantes) + 1
-				fechaInicio = date((anoP - 1), 12, diaInicio)
-
+	def entregarFechaInicialIndicador(self, diaP, mesP, anoP):
+		if diaP > self.entregarIndicadorParametrizado():
+			diaInicial = (self.entregarIndicadorParametrizado() - diaP) * (-1)
+			mesInicial = mesP
+			anoInicial = anoP			
+		elif diaP < self.entregarIndicadorParametrizado():
+			if mesP == 1:
+				diaInicial = (self.entregardiasMes(12, (anoP - 1)) + (diaP - self.entregarIndicadorParametrizado())) + 1
+				mesInicial = 12
+				anoInicial = anoP - 1
 			else:
-				if diaInicio == conteoIndicador:
-					diaInicio = 1
-				else:
-					diasFaltantes = (conteoIndicador - diaP) + 1
-					diaInicio = diasFaltantes
-
-				fechaInicio = date(anoP, 1, diaInicio)
-
-		elif mes == 3:
-			if anoP % 4 == 0:
-				#Ano Bisiesto
-				if diaP < conteoIndicador:
-					if diaP < conteoIndicador:
-						diasFaltantes = conteoIndicador - diaP
-						diaInicio = (29 - diasFaltantes) + 1
-						fechaInicio = date(anoP, 2, diaInicio)
-				else:
-					if diaP == conteoIndicador:
-						diaInicio = 1
-					else:
-						diasFaltantes = (conteoIndicador - diaP) + 1
-						diaInicio = diasFaltantes
-				fechaInicio = date(anoP, 3, diaInicio)
-			else:
-				if diaP < conteoIndicador:
-					if diaP < conteoIndicador:
-						diasFaltantes = conteoIndicador - diaP
-						diaInicio = (28 - diasFaltantes) + 1
-						fechaInicio = date(anoP, 2, diaInicio)
-				else:
-					if diaP == conteoIndicador:
-						diaInicio = 1
-					else:
-						diasFaltantes = (conteoIndicador - diaP) + 1
-						diaInicio = diasFaltantes
-
-				fechaInicio = date(anoP, 3, diaInicio)
+				diaInicial = (self.entregardiasMes((mesP - 1), anoP) + (diaP - self.entregarIndicadorParametrizado())) + 1
+				mesInicial = mesP - 1
+				anoInicial = anoP
 		else:
-			if diaP < conteoIndicador:
-				diasFaltantes = conteoIndicador - diaP
-				diaInicio = limiteMes[(mesP - 1)] - diasFaltantes
-				fechaInicio = date(anoP, (mesP - 1), diaInicio)
-			
+			diaInicial = 1
+			mesInicial = mesP
+			anoInicial = anoP
+		fechaInicial = datetime.date(anoInicial, mesInicial, diaInicial) 
+		return fechaInicial
+
+	def calcularIndicador(self, opcionBusquedaP, parametrosP, estacionIdP):
+		try:
+			daoRegistro =  dreg.RegistroDao()
+			objetoAcumulador = acm.acumulado()
+			macaron.macaronage("siprem.db")
+			estacionDaoP = models.Estacion.get(estacionIdP)
+			resultados = ["X"]
+			if opcionBusquedaP == 1:
+				#Diario - Anual
+				for m in range(1, 13):
+					datosMes = []
+					if m < 10:
+						mes = "0" + str(m)
+					else:
+						mes = str(m)
+					diasMes = [0]
+					for d in range(1, (self.entregardiasMes(m, int(parametrosP)) + 1)):
+						if d < 10:
+							dia = "0" + str(d)
+						else:
+							dia = str(d)
+						fechaInicial = str(self.entregarFechaInicialIndicador(d, m, int(parametrosP)))
+						fechaFinal = parametrosP + "-" + mes + "-" + dia
+						registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+						registros = daoRegistro.transformarRegistros(registrosDao)
+						diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+					datosMes.append(diasMes)
+					objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+					datosMes.append(objEstadistico)
+					resultados.append(datosMes)					
+			elif opcionBusquedaP == 2:
+				#Semestral
+				if parametrosP[0] == 1:
+					for m in range(1, 7):
+						datosSemestre = []
+						mes = "0" + str(m)
+						diasMes = [0]
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) + 1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)							
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosSemestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosSemestre.append(objEstadistico)
+						resultados.append(datosSemestre)
+				else:
+					for m in range(7, 13):
+						datosSemestre = []
+						if m < 10:
+							mes = "0" + str(m)
+						else:
+							mes = str(m)
+						diasMes = [0]
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) + 1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosSemestre.append(diasMes)					
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosSemestre.append(objEstadistico)
+						resultados.append(datosSemestre)
+			elif opcionBusquedaP == 3:
+				#Trimestre Bimodal
+				resultados = ["X"]				
+				if parametrosP[0] == 1:
+					datosTrimestre = []
+					#Mes Diciembre Ano Anterior
+					diasMes = [0]
+					mes = str(12)
+					for d in range(1, (self.entregardiasMes(12, (parametrosP[1] - 1)) + 1)):
+						if d < 10:
+							dia = "0" + str(d)
+						else:
+							dia = str(d)
+						fechaInicial = str(self.entregarFechaInicialIndicador(d, m, (parametrosP[1] - 1)))
+						fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+						registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+						registros = daoRegistro.transformarRegistros(registrosDao)
+						diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+					datosTrimestre.append(diasMes)
+					objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+					datosTrimestre.append(objEstadistico)
+					resultados.append(datosTrimestre)
+
+					for m in range(1, 3):
+						datosTrimestre = []
+						diasMes = [0]
+						mes = "0" + str(m)
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) + 1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosTrimestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosTrimestre.append(objEstadistico)
+						resultados.append(datosTrimestre)
+				elif parametrosP[0] == 2:
+					for m in range (3, 6):
+						datosTrimestre = []
+						diasMes = [0]
+						mes = "0" + str(m)
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1])) + 1):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosTrimestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosTrimestre.append(objEstadistico)
+						resultados.append(datosTrimestre)
+				elif parametrosP[0] == 3:
+					for m in range(6, 9):
+						datosTrimestre = []
+						diasMes = [0]
+						mes = "0" + str(m)
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) + 1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosTrimestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosTrimestre.append(objEstadistico)
+						resultados.append(datosTrimestre)
+				else:
+					for m in range(9, 12):
+						datosTrimestre = []
+						diasMes = [0]
+						if m < 10:
+							mes = "0" + str(m)
+						else:
+							mes = str(m)
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) + 1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosTrimestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosTrimestre.append(objEstadistico)
+						resultados.append(datosTrimestre)
 			else:
-				if diaP == conteoIndicador:
-					diaInicio = 1
+				#Trimestre Estandar
+				resultados = ["X"]
+				if parametrosP[0] == 1:
+					for m in range(1, 4):
+						datosTrimestre = []
+						diasMes = [0]
+						mes = "0" + str(m)
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) + 1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosTrimestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosTrimestre.append(objEstadistico)
+						resultados.append(datosTrimestre)
+				elif parametrosP[0] == 2:
+					for m in range (4, 7):
+						datosTrimestre = []
+						diasMes = [0]
+						mes = "0" + str(m)
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) + 1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosTrimestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosTrimestre.append(objEstadistico)
+						resultados.append(datosTrimestre)
+				elif parametrosP[0] == 3:
+					for m in range(7, 10):
+						datosTrimestre = []
+						diasMes = [0]
+						mes = "0" + str(m)
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) +1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosTrimestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosTrimestre.append(objEstadistico)
+						resultados.append(datosTrimestre)
 				else:
-					diasFaltantes = (conteoIndicador - diaP	) + 1
-					diaInicio = diasFaltantes
+					for m in range(10, 13):
+						datosTrimestre = []
+						diasMes = [0]
+						if m < 10:
+							mes = "0" + str(m)
+						else:
+							mes = str(m)
+						for d in range(1, (self.entregardiasMes(m, parametrosP[1]) + 1)):
+							if d < 10:
+								dia = "0" + str(d)
+							else:
+								dia = str(d)
+							fechaInicial = str(self.entregarFechaInicialIndicador(d, m, parametrosP[1]))
+							fechaFinal = str(parametrosP[1]) + "-" + mes + "-" + dia
+							registrosDao = estacionDaoP.estacionreg.select("fecha between ? and ?", [fechaInicial, fechaFinal])
+							registros = daoRegistro.transformarRegistros(registrosDao)
+							diasMes.append(objetoAcumulador.calcularAcumuladoMagnitudRegistros(registros))
+						datosTrimestre.append(diasMes)
+						objEstadistico = objetoAcumulador.calcularEstadisticos(diasMes)
+						datosTrimestre.append(objEstadistico)
+						resultados.append(datosTrimestre)
+			return resultados	
+		except Exception, e:
+			print e
 
-				fechaInicio = date(anoP, mesP, diaInicio)
+	def entregardiasMes(self, mesP, anoP):
+		dias = ["-", 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+		mes = mesP
+		ano = anoP
+		if mes == 2:
+			if( ano % 4 == 0 and ano % 100 != 0 or ano % 400 == 0):
+				#Bisiesto
+				return 29
+		return dias[mes]
 
-		fechaFin = date(anoP, mesP, diaP)
-		cantidadEventosEncontrados = 0
-		for evento in coleccionEventos:
-			if evento.entregarFecha() >= fechaInicio:
-				if evento.entregarFecha <= fechaFin:
-					cantidadEventosEncontrados+=1
-					indicadorCalculadoTemp += evento.entregarIntensidadMedia()
-				else:
-					break
-
-		self.modificarIndicarCalculado(indicadorCalculadoTemp)
-		
 
 
 				

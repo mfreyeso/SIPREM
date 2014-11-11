@@ -27,13 +27,11 @@
 						<div class="form-group">
 		                    <label for="tipoacumulado">Tipo de Acumulado</label>
 			                <select class="form-control" id="opcionselect" name="opcionselect">
-			                  <option value="1">Diario</option>
-			                  <option value="2">Mensual</option>
-			                  <option value="3">Anual</option>
-			                  <option value="4">Semestral</option>
-			                  <option value="5">Trimestral Bimodal</option>
-			                  <option value="6">Trimestral Estandar</option>
-			                  <option value="7">Personalizado</option>
+			                  <option value="1">Diario - Anual</option>
+			                  <option value="2">Semestral</option>
+			                  <option value="3">Trimestral Bimodal</option>
+			                  <option value="4">Trimestral Estandar</option>
+			                  <option value="5">Multianual</option>
 			                </select>
 			            </div>
 	            		<button type="button" class="btn btn-primary" valign="middle" id="butT">Preparar</button>
@@ -50,24 +48,6 @@
 							    	{
 							    		case 1:
 							    			var inputsDi = "<div class='form-group'>\
-							    			<label for='diasel'>Fecha</label>\
-							    			<input class='form-control' type='date' name='fecha'/>\
-							    			</div><br>";							    			
-											$("#divDinamico").empty();							                
-							                $("#divDinamico").append($(inputsDi));
-							    			break;
-
-							    		case 2:
-							    			var inputsDi = "<div class='form-group'>\
-							                	<label for='diasel'>Mes</label>\
-							                	<input class='form-control' type='month' name='mes'/>\
-							                	</div><br>";
-							                $("#divDinamico").empty();							                
-							                $("#divDinamico").append($(inputsDi));
-							    			break;
-
-							    		case 3:
-							    			var inputsDi = "<div class='form-group'>\
 							                <label for='diasel'>Año</label>\
 							                <input class='form-control' value='2002' type='number' name='ano' min='2002'>\
 							                </div><br>";
@@ -75,7 +55,7 @@
 							                $("#divDinamico").append($(inputsDi));
 							    			break;
 
-							    		case 4:
+							    		case 2:
 							    			var inputsDi ="<div class='form-group'>\
 							                    <label for='tipoacumulado'>Semestre</label>\
 								                <select class='form-control' name='semestre'>\
@@ -91,14 +71,14 @@
 							                $("#divDinamico").append($(inputsDi));
 							    			break;
 
-							    		case 5:
+							    		case 3:
 							    			var inputsDi ="<div class='form-group'>\
 							                    <label for='tipoacumulado'>Trimestre</label>\
 								                <select class='form-control' name='trimestre'>\
 								                <option value='1'>Diciembre - Febrero</option>\
 								                <option value='2'>Marzo - Mayo</option>\
 								                <option value='3'>Junio - Agosto</option>\
-								                <option value='2'>Septiembre - Noviembre</option>\
+								                <option value='4'>Septiembre - Noviembre</option>\
 								                </select>\
 								            	</div>\
 								            	<div class='form-group'>\
@@ -109,14 +89,14 @@
 							                $("#divDinamico").append($(inputsDi));
 							    			break;
 
-							    		case 6:
+							    		case 4:
 							    			var inputsDi ="<div class='form-group'>\
 							                    <label for='tipoacumulado'>Trimestre</label>\
 								                <select class='form-control' name='trimestre'>\
 								                <option value='1'>Enero - Marzo</option>\
 								                <option value='2'>Abril - Junio</option>\
 								                <option value='3'>Julio - Septiembre</option>\
-								                <option value='2'>Octubre - Diciembre</option>\
+								                <option value='4'>Octubre - Diciembre</option>\
 								                </select>\
 								            	</div>\
 								            	<div class='form-group'>\
@@ -127,12 +107,12 @@
 							                $("#divDinamico").append($(inputsDi));
 							    			break;
 
-							    		case 7:
+							    		case 5:
 							    			var inputsDi = "<div class='form-group'>\
-							    				<label for='tipoacumulado'>Fecha Inicial</label>\
-							    				<input class='form-control' type='date' name='fechainicial' id='fechainicial'/><br>\
-							    				<label for='tipoacumulado'>Fecha Final</label>\
-							    				<input class='form-control' type='date' name='fechafinal'/>\
+							    				<label for='tipoacumulado'>Año Inicial</label>\
+							    				<input class='form-control' type='number' name='anoinicial' id='anoinicial' value='2002' min='2002'/><br>\
+							    				<label for='tipoacumulado'>Año Final</label>\
+							    				<input class='form-control' type='number' name='anofinal' value='2002' min='2002'/>\
 							    				</div><br>";
 							    			$("#divDinamico").empty();
 							    			$("#divDinamico").append($(inputsDi));

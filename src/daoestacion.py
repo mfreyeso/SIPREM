@@ -114,3 +114,12 @@ class EstacionDao(object):
 			return estaciones
 		except Exception, e:
 			print e
+
+	def obtenerNombreEstacion(self, idEstacionP):
+		try:
+			macaron.macaronage("siprem.db")
+			estacionEncontrada = models.Estacion.get(idEstacionP)
+			return estacionEncontrada.nombre
+		except Exception, e:
+			print e
+			return None
